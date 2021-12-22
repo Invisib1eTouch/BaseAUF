@@ -14,11 +14,17 @@ public class PropertyReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public static String getUrl() {
+        return properties.getProperty("base.url");
     }
 
     public static String getBrowserName() {
         return properties.getProperty("browser");
     }
 
+    public static int getTimeOut() {
+        return Integer.parseInt(properties.getProperty("timeout"));
+    }
 }
