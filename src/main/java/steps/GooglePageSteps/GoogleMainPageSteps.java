@@ -1,8 +1,8 @@
-package steps;
+package steps.GooglePageSteps;
 
 import baseEntities.BaseStep;
 import org.openqa.selenium.WebDriver;
-import pages.GoogleMainPage;
+import pages.GooglePages.GoogleMainPage;
 
 public class GoogleMainPageSteps extends BaseStep {
 

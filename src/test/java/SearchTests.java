@@ -1,8 +1,8 @@
 import baseEntities.BaseTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pages.GoogleMainPage;
-import steps.GoogleMainPageSteps;
+import pages.GooglePages.GoogleMainPage;
+import steps.GooglePageSteps.GoogleMainPageSteps;
 
 public class SearchTests extends BaseTest {
 
