@@ -38,20 +38,25 @@ public class DatePickerWithTime {
         expandDatePicker();
         datePicker.findElement(By.className("react-datepicker__month-read-view--selected-month")).click();
         selectYearFromDropdown(date);
+        selectMonthFromDropdown(date);
     }
 
-    private void selectMonthFromDropdown() {
-////        Month
-//        List<WebElement> monthList = datePicker.findElements(By.className("react-datepicker__month-option"));
-//        for (WebElement month : monthList) {
-//            System.out.println(month.getText());
-//        }
+    private void selectMonthFromDropdown(Calendar date) {
+        if (datePicker.findElements(By.className("react-datepicker-popper")).size() < 1) {
+            expandDatePicker();
+        }
 
-//        try {
-//            Thread.sleep(5000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        if (!datePicker.findElement(By.className("react-datepicker__month-read-view--selected-month")).getText().equals(date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH))) {
+
+            List<WebElement> monthList = datePicker.findElements(By.className("react-datepicker__month-option"));
+            for (WebElement month : monthList) {
+                if (month.getText().equals(date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH))) {
+                    scrollIntoView(month);
+                    month.click();
+                    break;
+                }
+            }
+        }
     }
 
     private void selectYearFromDropdown(Calendar date) {
@@ -59,11 +64,11 @@ public class DatePickerWithTime {
             expandDatePicker();
         }
         String currentYear = datePicker.findElement(By.className("react-datepicker__year-read-view--selected-year")).getText();
-        datePicker.findElement(By.className("react-datepicker__year-read-view--down-arrow")).click();
-        List<WebElement> years = datePicker.findElements(By.className("react-datepicker__year-option"));
 
         if (!currentYear.equals(String.valueOf(date.get(Calendar.YEAR)))) {
             int differance = date.get(Calendar.YEAR) - Integer.parseInt(currentYear);
+            datePicker.findElement(By.className("react-datepicker__year-read-view--down-arrow")).click();
+            List<WebElement> years = datePicker.findElements(By.className("react-datepicker__year-option"));
 
             if (Math.abs(differance) <= 5) {
                 for (int i = 1; i < years.size() - 1; i++) {
@@ -88,7 +93,7 @@ public class DatePickerWithTime {
                 }
 
                 while (clicks != 0) {
-                    jsExecutor.executeScript("arguments[0].scrollIntoView();", datePicker.findElement(By.className("react-datepicker__navigation--years-previous")));
+                    scrollIntoView(datePicker.findElement(By.className("react-datepicker__navigation--years-previous")));
                     navigationYearBtn.click();
                     clicks--;
                 }
@@ -100,5 +105,9 @@ public class DatePickerWithTime {
 
     private void expandDatePicker() {
         datePicker.findElement(By.tagName("input")).click();
+    }
+
+    private void scrollIntoView(WebElement element) {
+        jsExecutor.executeScript("arguments[0].scrollIntoView();", element);
     }
 }
