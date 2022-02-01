@@ -1,17 +1,8 @@
 package wrappers;
 
-import core.PropertyReader;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import sun.awt.windows.ThemeReader;
-import utils.Waits;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -28,41 +19,20 @@ public class DatePickerWithTime {
     }
 
     public void setDateByInputValue(Calendar date) {
-        DateFormat dateFormat = new SimpleDateFormat("MMMMM d, yyyy h:mm a", Locale.ENGLISH);
-        String resultDate = dateFormat.format(date.getTime());
         datePicker.findElement(By.tagName("input")).sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
-        datePicker.findElement(By.tagName("input")).sendKeys(resultDate);
+        datePicker.findElement(By.tagName("input")).sendKeys(getFormattedDate(date, "MMMMM d, yyyy h:mm a"));
     }
 
     public void setDateBySelectParameters(Calendar date) {
         expandDatePicker();
-        datePicker.findElement(By.className("react-datepicker__month-read-view--selected-month")).click();
         selectYearFromDropdown(date);
         selectMonthFromDropdown(date);
-    }
-
-    private void selectMonthFromDropdown(Calendar date) {
-        if (datePicker.findElements(By.className("react-datepicker-popper")).size() < 1) {
-            expandDatePicker();
-        }
-
-        if (!datePicker.findElement(By.className("react-datepicker__month-read-view--selected-month")).getText().equals(date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH))) {
-
-            List<WebElement> monthList = datePicker.findElements(By.className("react-datepicker__month-option"));
-            for (WebElement month : monthList) {
-                if (month.getText().equals(date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH))) {
-                    scrollIntoView(month);
-                    month.click();
-                    break;
-                }
-            }
-        }
+        selectDayFromNumbersArea(date);
+        selectTime(date);
     }
 
     private void selectYearFromDropdown(Calendar date) {
-        if (datePicker.findElements(By.className("react-datepicker-popper")).size() < 1) {
-            expandDatePicker();
-        }
+        expandDatePickerIfCollapsed();
         String currentYear = datePicker.findElement(By.className("react-datepicker__year-read-view--selected-year")).getText();
 
         if (!currentYear.equals(String.valueOf(date.get(Calendar.YEAR)))) {
@@ -103,11 +73,49 @@ public class DatePickerWithTime {
         }
     }
 
+    private void selectMonthFromDropdown(Calendar date) {
+        expandDatePickerIfCollapsed();
+        if (!datePicker.findElement(By.className("react-datepicker__month-read-view--selected-month")).getText().equals(date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH))) {
+            datePicker.findElement(By.className("react-datepicker__month-read-view--selected-month")).click();
+            List<WebElement> monthList = datePicker.findElements(By.className("react-datepicker__month-option"));
+            for (WebElement month : monthList) {
+                if (month.getText().equals(date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH))) {
+                    scrollIntoView(month);
+                    month.click();
+                    break;
+                }
+            }
+        }
+    }
+
+    private void selectDayFromNumbersArea(Calendar date) {
+        expandDatePickerIfCollapsed();
+        datePicker.findElement(By.xpath(String.format("//div[contains(@aria-label, '%s')]", getFormattedDate(date, "MMMMM d")))).click();
+    }
+
+    private void selectTime(Calendar date) {
+        if (Integer.parseInt(getFormattedDate(date, "m")) % 15 == 0) {
+            datePicker.findElement(By.xpath(String.format("//li[text() = '%s']", getFormattedDate(date, "hh:mm")))).click();
+        } else {
+            datePicker.findElement(By.xpath("//li[text() = '00:00']")).click();
+        }
+    }
+
     private void expandDatePicker() {
         datePicker.findElement(By.tagName("input")).click();
     }
 
     private void scrollIntoView(WebElement element) {
         jsExecutor.executeScript("arguments[0].scrollIntoView();", element);
+    }
+
+    private void expandDatePickerIfCollapsed() {
+        if (datePicker.findElements(By.className("react-datepicker-popper")).size() < 1) {
+            expandDatePicker();
+        }
+    }
+
+    private String getFormattedDate(Calendar date, String format) {
+        return new SimpleDateFormat(format, Locale.ENGLISH).format(date.getTime());
     }
 }
