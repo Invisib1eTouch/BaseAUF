@@ -1,4 +1,5 @@
 import baseEntities.BaseTest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import pages.ToolsQAPages.DatePickerPage;
 
@@ -14,6 +15,12 @@ public class DatePickerTests extends BaseTest {
 
         datePickerPage.getDatePickerWithTime().setDateByInputValue(new GregorianCalendar(2000, Calendar.OCTOBER, 13, 22, 15));
 
-        datePickerPage.getDatePickerWithTime().setDateBySelectParameters(new GregorianCalendar(2028, Calendar.SEPTEMBER, 19, 6, 30));
+        Calendar dateInitial = new GregorianCalendar(2028, Calendar.SEPTEMBER, 19, 6, 30);
+
+        datePickerPage.getDatePickerWithTime().setDateBySelectParameters(dateInitial);
+
+        Calendar dateFormDatePicker = datePickerPage.getDatePickerWithTime().getDateFromDatePicker();
+
+        Assertions.assertEquals(dateInitial, dateFormDatePicker);
     }
 }

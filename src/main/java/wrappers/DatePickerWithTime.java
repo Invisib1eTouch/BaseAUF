@@ -4,6 +4,7 @@ import org.openqa.selenium.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,6 +30,17 @@ public class DatePickerWithTime {
         selectMonthFromDropdown(date);
         selectDayFromNumbersArea(date);
         selectTime(date);
+    }
+
+    public Calendar getDateFromDatePicker() {
+        expandDatePicker();
+        return new GregorianCalendar(
+                Integer.parseInt(datePicker.findElement(By.className("react-datepicker__year-read-view--selected-year")).getText()),
+                getCalendarMonth(datePicker.findElement(By.className("react-datepicker__month-read-view--selected-month")).getText()),
+                Integer.parseInt(datePicker.findElement(By.className("react-datepicker__day--selected")).getText()),
+                Integer.parseInt(datePicker.findElement(By.className("react-datepicker__time-list-item--selected")).getText().split(":")[0]),
+                Integer.parseInt(datePicker.findElement(By.className("react-datepicker__time-list-item--selected")).getText().split(":")[1])
+        );
     }
 
     private void selectYearFromDropdown(Calendar date) {
@@ -95,9 +107,9 @@ public class DatePickerWithTime {
 
     private void selectTime(Calendar date) {
         if (Integer.parseInt(getFormattedDate(date, "m")) % 15 == 0) {
-            datePicker.findElement(By.xpath(String.format("//li[text() = '%s']", getFormattedDate(date, "hh:mm")))).click();
+            datePicker.findElement(By.xpath(String.format("//li[text() = '%s']", getFormattedDate(date, "HH:mm")))).click();
         } else {
-            datePicker.findElement(By.xpath("//li[text() = '00:00']")).click();
+            throw new IllegalArgumentException("The minute value " + getFormattedDate(date, "mm") + " is incorrect. The DatePicker range of time is 15 minutes so correct minute values are 0, 15, 30, 45.");
         }
     }
 
@@ -117,5 +129,36 @@ public class DatePickerWithTime {
 
     private String getFormattedDate(Calendar date, String format) {
         return new SimpleDateFormat(format, Locale.ENGLISH).format(date.getTime());
+    }
+
+    private Integer getCalendarMonth(String monthName) {
+        switch (monthName.toLowerCase(Locale.ROOT)) {
+            case ("january"):
+                return Calendar.JANUARY;
+            case ("february"):
+                return Calendar.FEBRUARY;
+            case ("march"):
+                return Calendar.MARCH;
+            case ("april"):
+                return Calendar.APRIL;
+            case ("may"):
+                return Calendar.MAY;
+            case ("june"):
+                return Calendar.JUNE;
+            case ("july"):
+                return Calendar.JULY;
+            case ("august"):
+                return Calendar.AUGUST;
+            case ("september"):
+                return Calendar.SEPTEMBER;
+            case ("october"):
+                return Calendar.OCTOBER;
+            case ("november"):
+                return Calendar.NOVEMBER;
+            case ("december"):
+                return Calendar.DECEMBER;
+            default:
+                return null;
+        }
     }
 }
