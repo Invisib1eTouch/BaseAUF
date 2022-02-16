@@ -9,7 +9,7 @@ public abstract class BaseTest {
     protected WebDriver driver;
 
     @BeforeEach
-    public void setupClass() {
+    public void setupMethod() {
         driver = BrowserService.getInstance().getDriver();
         driver.manage().window().maximize();
     }
@@ -17,5 +17,6 @@ public abstract class BaseTest {
     @AfterEach
     public void tearDownMethod() {
         driver.quit();
+        BrowserService.quitInstance();
     }
 }

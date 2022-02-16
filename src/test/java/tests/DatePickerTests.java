@@ -1,3 +1,5 @@
+package tests;
+
 import baseEntities.BaseTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -9,7 +11,7 @@ import java.util.GregorianCalendar;
 public class DatePickerTests extends BaseTest {
 
     @Test
-    public void t1() {
+    public void setDateTest() {
         driver.get("https://demoqa.com/date-picker");
         DatePickerPage datePickerPage = new DatePickerPage(driver);
 

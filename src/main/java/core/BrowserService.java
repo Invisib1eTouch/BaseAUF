@@ -47,4 +47,8 @@ public class BrowserService {
     public WebDriver getDriver() {
         return this.driver;
     }
+
+    public static void quitInstance() {
+        instance = null;
+    }
 }
