@@ -2,15 +2,13 @@ package tests;
 
 import baseEntities.BaseTest;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import pages.GooglePages.GoogleMainPage;
 import steps.GooglePageSteps.GoogleMainPageSteps;
-import utils.TestExecutionListener2;
-import utils.TestExecutionListener5;
 
+@Tag("GoogleTest")
 public class SearchTests extends BaseTest {
-
 
     @Test
     public void positiveSearchTest() {
