@@ -16,8 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class TestExecutionListener implements AfterTestExecutionCallback {
-    private WebDriver driver;
-    private Path path;
+    private final WebDriver driver;
+    private final Path path;
 
 
     public TestExecutionListener() {
