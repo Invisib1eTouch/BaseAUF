@@ -3,43 +3,39 @@ package tests;
 import baseEntities.BaseTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import pages.ToolsQAPages.DatePickerPage;
-import testData.DateParameterResolver;
+import testData.DateArgumentProvider;
 
 import java.util.Calendar;
-import java.util.List;
 
 @Tag("DatePickerTest")
-@ExtendWith(DateParameterResolver.class)
 public class DatePickerTests extends BaseTest {
+    public static final String BASE_URL = "https://demoqa.com/date-picker";
 
-    @Test
-    void setDateByInputTest(List<Calendar> calendar) {
-        driver.get("https://demoqa.com/date-picker");
+    @ParameterizedTest(name = "{index}. Set date {0}")
+    @ArgumentsSource(DateArgumentProvider.class)
+    void setDateByInputTest(Calendar calendar) {
+        driver.get(BASE_URL);
         DatePickerPage datePickerPage = new DatePickerPage(driver);
 
-        for (Calendar date : calendar) {
-            datePickerPage.getDatePickerWithTime().setDateByInputValue(date);
-            Calendar dateFormDatePicker = datePickerPage.getDatePickerWithTime().getDateFromDatePicker();
+        datePickerPage.getDatePickerWithTime().setDateByInputValue(calendar);
+        Calendar dateFormDatePicker = datePickerPage.getDatePickerWithTime().getDateFromDatePicker();
 
-            Assertions.assertEquals(date, dateFormDatePicker);
-        }
-
+        Assertions.assertEquals(calendar, dateFormDatePicker);
     }
 
-    @Test
-    public void setDateBySelectingTest(List<Calendar> calendar) {
-        driver.get("https://demoqa.com/date-picker");
+    @ParameterizedTest(name = "{index}. Set date {0}")
+    @ArgumentsSource(DateArgumentProvider.class)
+    public void setDateBySelectingTest(Calendar calendar) {
+        driver.get(BASE_URL);
         DatePickerPage datePickerPage = new DatePickerPage(driver);
 
-        for (Calendar date : calendar) {
-            datePickerPage.getDatePickerWithTime().setDateBySelectParameters(date);
-            Calendar dateFormDatePicker = datePickerPage.getDatePickerWithTime().getDateFromDatePicker();
+        datePickerPage.getDatePickerWithTime().setDateBySelectParameters(calendar);
+        Calendar dateFormDatePicker = datePickerPage.getDatePickerWithTime().getDateFromDatePicker();
 
-            Assertions.assertEquals(date, dateFormDatePicker);
-        }
+        Assertions.assertEquals(calendar, dateFormDatePicker);
     }
 }
 
