@@ -14,7 +14,7 @@ import java.util.Calendar;
 public class DatePickerTests extends BaseTest {
     public static final String BASE_URL = "https://demoqa.com/date-picker";
 
-    @ParameterizedTest(name = "{index}. Set date {0}")
+    @ParameterizedTest(name = "{index}. Set date by input")
     @ArgumentsSource(DateArgumentProvider.class)
     void setDateByInputTest(Calendar calendar) {
         driver.get(BASE_URL);
@@ -26,7 +26,7 @@ public class DatePickerTests extends BaseTest {
         Assertions.assertEquals(calendar, dateFormDatePicker);
     }
 
-    @ParameterizedTest(name = "{index}. Set date {0}")
+    @ParameterizedTest(name = "{index}. Set date by selecting")
     @ArgumentsSource(DateArgumentProvider.class)
     public void setDateBySelectingTest(Calendar calendar) {
         driver.get(BASE_URL);
