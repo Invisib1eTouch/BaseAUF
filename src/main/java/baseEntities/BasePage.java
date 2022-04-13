@@ -23,7 +23,7 @@ public abstract class BasePage {
     }
 
     public void verifyPageOpened() {
-        new Waits(driver).waitForVisibility(getPageOpenedIndicatorBy());
+        Waits.getInstance(driver).waitForVisibility(getPageOpenedIndicatorBy());
     }
 
     protected abstract By getPageOpenedIndicatorBy();

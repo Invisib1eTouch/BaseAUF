@@ -27,7 +27,7 @@ public class GoogleMainPage extends BasePage {
     }
 
     public List<WebElement> getSearchResults() {
-        return new Waits(driver).waitForVisibilityOfAllElements(searchResultsBy);
+        return Waits.getInstance(driver).waitForVisibilityOfAllElements(searchResultsBy);
     }
 
     public WebElement getSearchBtn() {

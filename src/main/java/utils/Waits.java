@@ -12,9 +12,17 @@ import java.util.List;
 
 public class Waits {
     private final WebDriverWait wait;
+    private static Waits instance;
 
-    public Waits(WebDriver driver) {
+    private Waits(WebDriver driver) {
         wait = new WebDriverWait(driver, Duration.ofSeconds(PropertyReader.getTimeOut()));
+    }
+
+    public static Waits getInstance(WebDriver driver) {
+        if (instance == null) {
+            instance = new Waits(driver);
+        }
+        return instance;
     }
 
     public WebElement waitForVisibility(By by) {
