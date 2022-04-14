@@ -18,6 +18,6 @@ public class SearchTests extends BaseTest {
         GoogleMainPageSteps googleMainPageSteps = new GoogleMainPageSteps(driver);
         googleMainPageSteps.search("Test");
 
-        Assertions.assertEquals(10, googleMainPageSteps.resultsNumber());
+        Assertions.assertEquals(100, googleMainPageSteps.resultsNumber());
     }
 }
