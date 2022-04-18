@@ -6,6 +6,6 @@ import org.junit.platform.suite.api.Suite;
 
 @Suite
 @SelectPackages("tests")
-@IncludeTags("DatePickerTest")
+@IncludeTags({"GoogleTest", "DatePickerTest"})
 public class SuiteRunner {
 }
