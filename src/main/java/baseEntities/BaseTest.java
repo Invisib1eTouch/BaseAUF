@@ -9,7 +9,7 @@ public abstract class BaseTest {
     protected static WebDriver driver;
 
     @BeforeAll
-    public static void setupMethod() {
+    public static void setupClass() {
         driver = BrowserService.getInstance().getDriver();
         driver.manage().window().maximize();
     }
