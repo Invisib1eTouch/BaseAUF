@@ -156,7 +156,7 @@ public class DatePickerWithTime {
         return new SimpleDateFormat(format, Locale.ENGLISH).format(date.getTime());
     }
 
-    private Integer getCalendarMonth(String monthName) {
+    public static Integer getCalendarMonth(String monthName) {
         switch (monthName.toLowerCase(Locale.ROOT)) {
             case ("january"):
                 return Calendar.JANUARY;

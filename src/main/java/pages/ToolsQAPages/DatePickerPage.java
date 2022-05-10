@@ -1,23 +1,15 @@
 package pages.ToolsQAPages;
 
-import baseEntities.BasePage;
+import net.serenitybdd.core.pages.PageObject;
+import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import wrappers.DatePickerWithTime;
 
-public class DatePickerPage extends BasePage {
+@DefaultUrl("https://demoqa.com/date-picker")
+public class DatePickerPage extends PageObject {
     private static final By datePickerWithTimeBy = By.id("dateAndTimePicker");
 
-    public DatePickerPage(WebDriver driver) {
-        super(driver, null);
-    }
-
-    @Override
-    protected By getPageOpenedIndicatorBy() {
-        return datePickerWithTimeBy;
-    }
-
-    public DatePickerWithTime getDatePickerWithTime(){
-        return new DatePickerWithTime(driver, datePickerWithTimeBy);
+    public DatePickerWithTime getDatePickerWithTime() {
+        return new DatePickerWithTime(getDriver(), datePickerWithTimeBy);
     }
 }

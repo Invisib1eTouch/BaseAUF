@@ -1,24 +1,27 @@
 package steps.GooglePageSteps;
 
-import baseEntities.BaseStep;
-import org.openqa.selenium.WebDriver;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Assertions;
 import pages.GooglePages.GoogleMainPage;
 
-public class GoogleMainPageSteps extends BaseStep {
+public class GoogleMainPageSteps {
+    GoogleMainPage googleMainPage;
 
-    public GoogleMainPageSteps(WebDriver driver) {
-        super(driver);
+    @Given("User proceeds to Google Main page")
+    public void proceed_to_google_main_page() {
+        googleMainPage.open();
     }
 
-    public GoogleMainPageSteps search(String query) {
-        GoogleMainPage page = new GoogleMainPage(driver);
-        page.getSearchInput().sendKeys(query);
-        page.getSearchBtn().click();
-        return this;
+    @When("User searches the {string}")
+    public void user_searches_request(String request) {
+        googleMainPage.getSearchInput().sendKeys(request);
+        googleMainPage.getSearchBtn().click();
     }
 
-    public int resultsNumber() {
-        GoogleMainPage page = new GoogleMainPage(driver);
-        return page.getSearchResults().size();
+    @Then("The list of {int} results is displayed")
+    public void verify_results_number(int numberOfResults) {
+        Assertions.assertEquals(numberOfResults, googleMainPage.getSearchResults().size());
     }
 }

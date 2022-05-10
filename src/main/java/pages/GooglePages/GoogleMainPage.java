@@ -1,36 +1,27 @@
 package pages.GooglePages;
 
-import baseEntities.BasePage;
+import net.serenitybdd.core.pages.PageObject;
+import net.serenitybdd.core.pages.WebElementFacade;
+import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import utils.Waits;
 
 import java.util.List;
 
-public class GoogleMainPage extends BasePage {
+@DefaultUrl("https://google.by")
+public class GoogleMainPage extends PageObject {
     private static final By searchInputBy = By.className("gLFyf");
     private static final By searchResultsBy = By.cssSelector("#search .g");
-    private static final By searchBtnBy = By.cssSelector(".FPdoLc .gNO89b");
+    private static final By searchBtnBy = By.cssSelector(".CqAVzb .gNO89b");
 
-    public GoogleMainPage(WebDriver driver) {
-        super(driver, "");
+    public WebElementFacade getSearchInput() {
+        return find(searchInputBy);
     }
 
-    @Override
-    protected By getPageOpenedIndicatorBy() {
-        return searchInputBy;
+    public List<WebElementFacade> getSearchResults() {
+        return waitForRenderedElements(searchResultsBy).$$(searchResultsBy);
     }
 
-    public WebElement getSearchInput() {
-        return driver.findElement(searchInputBy);
-    }
-
-    public List<WebElement> getSearchResults() {
-        return Waits.getInstance(driver).waitForVisibilityOfAllElements(searchResultsBy);
-    }
-
-    public WebElement getSearchBtn() {
-        return driver.findElement(searchBtnBy);
+    public WebElementFacade getSearchBtn() {
+        return find(searchBtnBy);
     }
 }
