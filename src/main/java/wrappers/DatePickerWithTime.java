@@ -1,17 +1,21 @@
 package wrappers;
 
-import org.openqa.selenium.*;
+import net.serenitybdd.core.pages.ListOfWebElementFacades;
+import net.serenitybdd.core.pages.PageObject;
+import net.serenitybdd.core.pages.WebElementFacade;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 
-public class DatePickerWithTime {
-    private final WebDriver driver;
-    private WebElement datePicker;
+public class DatePickerWithTime extends PageObject {
     private JavascriptExecutor jsExecutor;
+
+    private final By datePickerBy;
 
     private static final By datePickerInputBy = By.tagName("input");
     private static final By yearDropdownBy = By.className("react-datepicker__year-read-view--selected-year");
@@ -19,15 +23,22 @@ public class DatePickerWithTime {
     private static final By currentTimeBy = By.className("react-datepicker__time-list-item--selected");
     private static final By yearListFromDropdownBy = By.className("react-datepicker__year-option");
 
-    public DatePickerWithTime(WebDriver driver, By by) {
-        this.driver = driver;
-        this.datePicker = driver.findElement(by);
-        this.jsExecutor = (JavascriptExecutor) driver;
+    public DatePickerWithTime(By by) {
+        this.jsExecutor = (JavascriptExecutor) getDriver();
+        this.datePickerBy = by;
+    }
+
+    private WebElementFacade findDatePickerElement(By datePickerElement) {
+        return find(datePickerBy).then(datePickerElement);
+    }
+
+    private ListOfWebElementFacades findDatePickerElements(By datePickerElements) {
+        return find(datePickerBy).thenFindAll(datePickerElements);
     }
 
     public void setDateByInputValue(Calendar date) {
-        datePicker.findElement(datePickerInputBy).sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
-        datePicker.findElement(datePickerInputBy).sendKeys(getFormattedDate(date, "MMMMM d, yyyy h:mm a"));
+        findDatePickerElement(datePickerInputBy).typeAndEnter(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
+        findDatePickerElement(datePickerInputBy).typeAndEnter(getFormattedDate(date, "MMMMM d, yyyy h:mm a"));
     }
 
     public void setDateBySelectParameters(Calendar date) {
@@ -41,23 +52,23 @@ public class DatePickerWithTime {
     public Calendar getDateFromDatePicker() {
         expandDatePicker();
         return new GregorianCalendar(
-                Integer.parseInt(datePicker.findElement(yearDropdownBy).getText()),
-                getCalendarMonth(datePicker.findElement(monthDropdownBy).getText()),
-                Integer.parseInt(datePicker.findElement(By.className("react-datepicker__day--selected")).getText()),
-                Integer.parseInt(datePicker.findElement(currentTimeBy).getText().split(":")[0]),
-                Integer.parseInt(datePicker.findElement(currentTimeBy).getText().split(":")[1])
+                Integer.parseInt(findDatePickerElement(yearDropdownBy).getText()),
+                getCalendarMonth(findDatePickerElement(monthDropdownBy).getText()),
+                Integer.parseInt(findDatePickerElement(By.className("react-datepicker__day--selected")).getText()),
+                Integer.parseInt(findDatePickerElement(currentTimeBy).getText().split(":")[0]),
+                Integer.parseInt(findDatePickerElement(currentTimeBy).getText().split(":")[1])
         );
     }
 
     private void selectYearFromDropdown(Calendar date) {
         expandDatePickerIfCollapsed();
-        String currentYear = datePicker.findElement(yearDropdownBy).getText();
+        String currentYear = findDatePickerElement(yearDropdownBy).getText();
         String yearToSelect = String.valueOf(date.get(Calendar.YEAR));
 
         if (!currentYear.equals(yearToSelect)) {
             int differance = Integer.parseInt(yearToSelect) - Integer.parseInt(currentYear);
-            datePicker.findElement(By.className("react-datepicker__year-read-view--down-arrow")).click();
-            List<WebElement> years = datePicker.findElements(yearListFromDropdownBy);
+            findDatePickerElement(By.className("react-datepicker__year-read-view--down-arrow")).click();
+            ListOfWebElementFacades years = findDatePickerElements(yearListFromDropdownBy);
 
             if (Math.abs(differance) <= 5) {
                 selectYearIfPresent(yearToSelect, years);
@@ -69,37 +80,37 @@ public class DatePickerWithTime {
 
     private void selectYearIfNotPresent(int differance) {
         int yearIndexToSelect = proceedToYearsRangeToSelect(differance);
-        List<WebElement> years = datePicker.findElements(yearListFromDropdownBy);
+        ListOfWebElementFacades years = findDatePickerElements(yearListFromDropdownBy);
         years.get(yearIndexToSelect).click();
     }
 
     private int proceedToYearsRangeToSelect(int diffBetweenResultAndCurrentYears) {
         int clicks;
         int yearIndexToSelect;
-        WebElement navigationYearBtn;
+        WebElementFacade navigationYearBtn;
 
         final By nextNavigationBtnBy = By.className("react-datepicker__navigation--years-upcoming");
         final By previousNavigationBtnBy = By.className("react-datepicker__navigation--years-previous");
 
         if (diffBetweenResultAndCurrentYears < 0) {
             clicks = Math.abs(diffBetweenResultAndCurrentYears + 5);
-            navigationYearBtn = datePicker.findElement(previousNavigationBtnBy);
+            navigationYearBtn = findDatePickerElement(previousNavigationBtnBy);
             yearIndexToSelect = 11;
         } else {
             clicks = diffBetweenResultAndCurrentYears - 5;
-            navigationYearBtn = datePicker.findElement(nextNavigationBtnBy);
+            navigationYearBtn = findDatePickerElement(nextNavigationBtnBy);
             yearIndexToSelect = 1;
         }
 
         while (clicks != 0) {
-            scrollIntoView(datePicker.findElement(previousNavigationBtnBy));
+            scrollIntoView(findDatePickerElement(previousNavigationBtnBy));
             navigationYearBtn.click();
             clicks--;
         }
         return yearIndexToSelect;
     }
 
-    private void selectYearIfPresent(String yearToSelect, List<WebElement> years) {
+    private void selectYearIfPresent(String yearToSelect, ListOfWebElementFacades years) {
         for (int i = 1; i < years.size() - 1; i++) {
             if (years.get(i).getText().equals(yearToSelect)) {
                 years.get(i).click();
@@ -110,12 +121,12 @@ public class DatePickerWithTime {
 
     private void selectMonthFromDropdown(Calendar date) {
         expandDatePickerIfCollapsed();
-        WebElement datePickerMonth = datePicker.findElement(monthDropdownBy);
+        WebElementFacade datePickerMonth = findDatePickerElement(monthDropdownBy);
         String monthToSelect = date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH);
         if (!datePickerMonth.getText().equals(monthToSelect)) {
             datePickerMonth.click();
-            List<WebElement> monthList = datePicker.findElements(By.className("react-datepicker__month-option"));
-            for (WebElement month : monthList) {
+            ListOfWebElementFacades monthList = findDatePickerElements(By.className("react-datepicker__month-option"));
+            for (WebElementFacade month : monthList) {
                 if (month.getText().equals(monthToSelect)) {
                     scrollIntoView(month);
                     month.click();
@@ -127,27 +138,27 @@ public class DatePickerWithTime {
 
     private void selectDayFromNumbersArea(Calendar date) {
         expandDatePickerIfCollapsed();
-        datePicker.findElement(By.xpath(String.format("//div[contains(@aria-label, '%s')]", getFormattedDate(date, "MMMMM d")))).click();
+        findDatePickerElement(By.xpath(String.format("//div[contains(@aria-label, '%s')]", getFormattedDate(date, "MMMMM d")))).click();
     }
 
     private void selectTime(Calendar date) {
         if (Integer.parseInt(getFormattedDate(date, "m")) % 15 == 0) {
-            datePicker.findElement(By.xpath(String.format("//li[text() = '%s']", getFormattedDate(date, "HH:mm")))).click();
+            findDatePickerElement(By.xpath(String.format("//li[text() = '%s']", getFormattedDate(date, "HH:mm")))).click();
         } else {
             throw new IllegalArgumentException("The minute value " + getFormattedDate(date, "mm") + " is incorrect. The DatePicker range of time is 15 minutes so correct minute values are 0, 15, 30, 45.");
         }
     }
 
     private void expandDatePicker() {
-        datePicker.findElement(datePickerInputBy).click();
+        findDatePickerElement(datePickerInputBy).click();
     }
 
-    private void scrollIntoView(WebElement element) {
+    private void scrollIntoView(WebElementFacade element) {
         jsExecutor.executeScript("arguments[0].scrollIntoView();", element);
     }
 
     private void expandDatePickerIfCollapsed() {
-        if (datePicker.findElements(By.className("react-datepicker-popper")).size() < 1) {
+        if (findDatePickerElements(By.className("react-datepicker-popper")).size() < 1) {
             expandDatePicker();
         }
     }

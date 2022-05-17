@@ -10,6 +10,6 @@ public class DatePickerPage extends PageObject {
     private static final By datePickerWithTimeBy = By.id("dateAndTimePicker");
 
     public DatePickerWithTime getDatePickerWithTime() {
-        return new DatePickerWithTime(getDriver(), datePickerWithTimeBy);
+        return new DatePickerWithTime(datePickerWithTimeBy);
     }
 }
