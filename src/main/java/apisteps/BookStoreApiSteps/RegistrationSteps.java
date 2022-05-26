@@ -2,6 +2,7 @@ package apisteps.BookStoreApiSteps;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.restassured.path.json.JsonPath;
 import models.LoginViewModel;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
@@ -18,12 +19,12 @@ public class RegistrationSteps extends BaseApiSteps {
     private static String token;
     private static String userId;
 
-    @When("User sign up with valid username:{string} and password:{string} credentials")
+    @When("User sign up with username:{string} and password:{string} credentials")
     public void user_registration(String username, String password) {
-        if (username.equals("random")) {
+        if (username.equals("randomValid")) {
             username = Randomizer.getRandomAlphabeticValue(10);
         }
-        if (password.equals("random")) {
+        if (password.equals("randomValid")) {
             password = Randomizer.getRandomPassword();
         }
 
@@ -39,10 +40,6 @@ public class RegistrationSteps extends BaseApiSteps {
                 .post(ENDPOINT);
 
         token = generateToken(username, password);
-
-        userId = response
-                .then()
-                .extract().jsonPath().get("userId");
     }
 
     @Then("User successfully registered")
@@ -56,6 +53,19 @@ public class RegistrationSteps extends BaseApiSteps {
                 .extract().jsonPath().get("userId");
 
         assertThat(response.getStatusCode(), equalTo(HttpStatus.SC_CREATED));
-        assertThat(userId, equalTo(givenUserID));
+        assertThat(response.then().extract().jsonPath().get("userId"), equalTo(givenUserID));
+    }
+
+    @Then("User is not registered")
+    public void registration_with_incorrect_credentials() {
+        JsonPath resultJsonPath = response.then().extract().jsonPath();
+        String errorMessage = "Passwords must have at least one non alphanumeric character, one digit ('0'-'9'), " +
+                "one uppercase ('A'-'Z'), one lowercase ('a'-'z'), one special character and Password must be eight " +
+                "characters or longer.";
+
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.SC_BAD_REQUEST));
+        assertThat(resultJsonPath.get("code"), equalTo("1300"));
+        assertThat(resultJsonPath.get("message"), equalTo(errorMessage));
+        assertThat(token, equalTo(null));
     }
 }
