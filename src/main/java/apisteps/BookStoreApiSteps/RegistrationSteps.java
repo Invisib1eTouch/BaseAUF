@@ -5,11 +5,10 @@ import io.cucumber.java.en.When;
 import models.LoginViewModel;
 import org.apache.http.HttpStatus;
 
-import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
+import static net.serenitybdd.rest.SerenityRest.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-
 public class RegistrationSteps extends BaseApiSteps {
 
     private static final String ENDPOINT = "/Account/v1/User";

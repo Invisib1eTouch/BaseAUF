@@ -5,18 +5,16 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import models.LoginViewModel;
 
-import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
+import static net.serenitybdd.rest.SerenityRest.*;
 
 public abstract class BaseApiSteps {
-    protected Gson gson;
+    protected static Gson gson = new Gson();
 
     protected static Response response;
-    protected static final String BASE_URL = "https://demoqa.com";
 
     public BaseApiSteps() {
-        this.gson = new Gson();
-        RestAssured.baseURI = BASE_URL;
+        RestAssured.baseURI = "https://demoqa.com";
     }
 
     protected String generateToken(String username, String password) {

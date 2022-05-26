@@ -6,4 +6,4 @@ Feature: User registration
 
     Examples:
       | username | password |
-      | a1111       | !1Qq!1Qq |
+      | b11      | !1Qq!1Qq |

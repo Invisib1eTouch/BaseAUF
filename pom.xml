@@ -10,7 +10,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <serenity.version>3.2.4</serenity.version>
+        <serenity.version>3.2.5</serenity.version>
         <cucumber.version>7.3.4</cucumber.version>
         <encoding>UTF-8</encoding>
         <tags></tags>
@@ -74,9 +74,9 @@
             <version>3.22.0</version>
         </dependency>
         <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>5.0.1</version>
+            <groupId>net.serenity-bdd</groupId>
+            <artifactId>serenity-rest-assured</artifactId>
+            <version>${serenity.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
