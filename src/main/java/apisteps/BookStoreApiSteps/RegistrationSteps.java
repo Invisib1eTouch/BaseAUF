@@ -3,7 +3,9 @@ package apisteps.BookStoreApiSteps;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import models.LoginViewModel;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
+import utils.Randomizer;
 
 import static io.restassured.http.ContentType.JSON;
 import static net.serenitybdd.rest.SerenityRest.*;
@@ -18,6 +20,12 @@ public class RegistrationSteps extends BaseApiSteps {
 
     @When("User sign up with valid username:{string} and password:{string} credentials")
     public void user_registration(String username, String password) {
+        if (username.equals("random")) {
+            username = Randomizer.getRandomAlphabeticValue(10);
+        }
+        if (password.equals("random")) {
+            password = Randomizer.getRandomPassword();
+        }
 
         LoginViewModel loginModel = new LoginViewModel.Builder()
                 .addUsername(username)
