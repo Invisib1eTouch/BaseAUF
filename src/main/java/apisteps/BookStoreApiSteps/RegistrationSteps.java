@@ -4,7 +4,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.path.json.JsonPath;
 import models.LoginViewModel;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 import utils.Randomizer;
 
@@ -12,6 +11,7 @@ import static io.restassured.http.ContentType.JSON;
 import static net.serenitybdd.rest.SerenityRest.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+
 public class RegistrationSteps extends BaseApiSteps {
 
     private static final String ENDPOINT = "/Account/v1/User";
@@ -43,7 +43,7 @@ public class RegistrationSteps extends BaseApiSteps {
     }
 
     @Then("User successfully registered")
-    public void successful_registration() {
+    public void successful_registration_verification() {
         String givenUserID = given()
                 .header("Authorization", "Bearer " + token)
                 .contentType(JSON)
@@ -56,16 +56,17 @@ public class RegistrationSteps extends BaseApiSteps {
         assertThat(response.then().extract().jsonPath().get("userId"), equalTo(givenUserID));
     }
 
-    @Then("User is not registered")
-    public void registration_with_incorrect_credentials() {
+    @Then("The error message {string} with error code {string} is received")
+    public void registration_error_message_and_error_code_verification(String errorMessage, String errorCode) {
         JsonPath resultJsonPath = response.then().extract().jsonPath();
-        String errorMessage = "Passwords must have at least one non alphanumeric character, one digit ('0'-'9'), " +
-                "one uppercase ('A'-'Z'), one lowercase ('a'-'z'), one special character and Password must be eight " +
-                "characters or longer.";
 
         assertThat(response.getStatusCode(), equalTo(HttpStatus.SC_BAD_REQUEST));
-        assertThat(resultJsonPath.get("code"), equalTo("1300"));
+        assertThat(resultJsonPath.get("code"), equalTo(errorCode));
         assertThat(resultJsonPath.get("message"), equalTo(errorMessage));
+    }
+
+    @Then("User is not registered")
+    public void registration_with_incorrect_credentials_verification() {
         assertThat(token, equalTo(null));
     }
 }
