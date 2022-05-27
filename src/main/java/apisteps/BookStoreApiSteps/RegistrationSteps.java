@@ -5,10 +5,10 @@ import io.cucumber.java.en.When;
 import io.restassured.path.json.JsonPath;
 import models.LoginViewModel;
 import org.apache.http.HttpStatus;
-import utils.Randomizer;
+import utils.DataGenerator;
 
 import static io.restassured.http.ContentType.JSON;
-import static net.serenitybdd.rest.SerenityRest.*;
+import static net.serenitybdd.rest.SerenityRest.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -17,15 +17,15 @@ public class RegistrationSteps extends BaseApiSteps {
     private static final String ENDPOINT = "/Account/v1/User";
 
     private static String token;
-    private static String userId;
+    private static String userID;
 
     @When("User sign up with username:{string} and password:{string} credentials")
     public void user_registration(String username, String password) {
         if (username.equals("randomValid")) {
-            username = Randomizer.getRandomAlphabeticValue(10);
+            username = DataGenerator.getRandomAlphabeticValue(10);
         }
         if (password.equals("randomValid")) {
-            password = Randomizer.getRandomPassword();
+            password = DataGenerator.getRandomPassword();
         }
 
         LoginViewModel loginModel = new LoginViewModel.Builder()
@@ -40,6 +40,10 @@ public class RegistrationSteps extends BaseApiSteps {
                 .post(ENDPOINT);
 
         token = generateToken(username, password);
+
+        userID = response
+                .then()
+                .extract().jsonPath().get("userID");
     }
 
     @Then("User successfully registered")
@@ -48,12 +52,12 @@ public class RegistrationSteps extends BaseApiSteps {
                 .header("Authorization", "Bearer " + token)
                 .contentType(JSON)
                 .when()
-                .get(ENDPOINT + "/" + userId)
+                .get(ENDPOINT + "/" + userID)
                 .then()
                 .extract().jsonPath().get("userId");
 
         assertThat(response.getStatusCode(), equalTo(HttpStatus.SC_CREATED));
-        assertThat(response.then().extract().jsonPath().get("userId"), equalTo(givenUserID));
+        assertThat(userID, equalTo(givenUserID));
     }
 
     @Then("The error message {string} with error code {string} is received")

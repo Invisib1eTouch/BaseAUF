@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import models.LoginViewModel;
 
 import static io.restassured.http.ContentType.JSON;
-import static net.serenitybdd.rest.SerenityRest.*;
+import static net.serenitybdd.rest.SerenityRest.given;
 
 public abstract class BaseApiSteps {
     protected static Gson gson = new Gson();
@@ -30,5 +30,23 @@ public abstract class BaseApiSteps {
                 .post("/Account/v1/GenerateToken")
                 .then()
                 .extract().jsonPath().get("token");
+    }
+
+    protected String generateToken(LoginViewModel loginViewModel) {
+        return given()
+                .contentType(JSON)
+                .body(gson.toJson(loginViewModel))
+                .when()
+                .post("/Account/v1/GenerateToken")
+                .then()
+                .extract().jsonPath().get("token");
+    }
+
+    protected void createNewUser(LoginViewModel loginModel) {
+        given()
+                .contentType(JSON)
+                .body(gson.toJson(loginModel))
+                .when()
+                .post("/Account/v1/User");
     }
 }
