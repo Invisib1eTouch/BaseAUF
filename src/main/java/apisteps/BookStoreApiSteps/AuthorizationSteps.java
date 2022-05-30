@@ -25,9 +25,9 @@ public class AuthorizationSteps extends BaseApiSteps {
     private List<LoginViewModel> userCredentialsModels;
     private final List<Response> responseBodiesToVerify = new ArrayList<>();
 
-    @Given("Set of valid user credentials")
-    public void generate_valid_user_credentials() {
-        userCredentialsModels = DataGenerator.generateUserCredentials(3);
+    @Given("Set of valid user credentials equals {int}")
+    public void generate_valid_user_credentials(int numberOfUserCredentialsToGenerate) {
+        userCredentialsModels = DataGenerator.generateUserCredentials(numberOfUserCredentialsToGenerate);
     }
 
     @Given("Registered users that have active valid token")

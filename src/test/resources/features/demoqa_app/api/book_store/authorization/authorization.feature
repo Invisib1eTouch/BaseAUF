@@ -1,7 +1,7 @@
 Feature: User authorization
 
   Background: There is set of generated user credentials
-    Given Set of valid user credentials
+    Given Set of valid user credentials equals 3
 
   Scenario Outline: Registered user is authorized when he/she has valid token
     Given Registered users that have active valid token
