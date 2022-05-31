@@ -7,3 +7,12 @@ Feature: Book Store feature
     Examples:
       | ISBN          |
       | 9781449325862 |
+
+  Scenario Outline: Get all books from store
+    When User requests all books available in store
+    Then <numberOfBooks> books are received
+    And Correct data for all books are received
+
+    Examples:
+      | numberOfBooks |
+      | 8             |
