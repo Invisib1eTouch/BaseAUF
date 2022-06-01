@@ -25,27 +25,22 @@ public class AuthorizationSteps extends BaseApiSteps {
     private List<LoginViewModel> userCredentialsModels;
     private final List<Response> responseBodiesToVerify = new ArrayList<>();
 
-    @Given("Set of valid user credentials equals {int}")
-    public void generate_valid_user_credentials(int numberOfUserCredentialsToGenerate) {
+    @When("{int} new user\\(s) are registered")
+    public void registered_new_unauthorized_users(int numberOfUserCredentialsToGenerate) {
         userCredentialsModels = DataGenerator.generateUserCredentials(numberOfUserCredentialsToGenerate);
-    }
-
-    @Given("Registered users that have active valid token")
-    public void registered_new_authorized_users() {
         for (LoginViewModel model : userCredentialsModels) {
             createNewUser(model);
+        }
+    }
+
+    @When("Token is generated for user\\(s)")
+    public void generate_valid_user_credentials() {
+        for (LoginViewModel model : userCredentialsModels) {
             generateToken(model);
         }
     }
 
-    @Given("Registered users that have no active valid token")
-    public void registered_new_unauthorized_users() {
-        for (LoginViewModel model : userCredentialsModels) {
-            createNewUser(model);
-        }
-    }
-
-    @When("User try to authorize")
+    @When("User\\(s) try to authorize")
     public void user_authorization() {
         for (LoginViewModel model : userCredentialsModels) {
             responseBodiesToVerify.add(given()
@@ -54,6 +49,11 @@ public class AuthorizationSteps extends BaseApiSteps {
                     .when()
                     .post(ENDPOINT));
         }
+    }
+
+    @When("{int} set\\(s) of valid user credentials are generated")
+    public void generate_valid_user_credentials(int numberOfUserCredentialsToGenerate) {
+        userCredentialsModels = DataGenerator.generateUserCredentials(numberOfUserCredentialsToGenerate);
     }
 
     @Then("Authorization response is {string}")

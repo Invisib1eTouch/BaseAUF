@@ -1,11 +1,9 @@
 Feature: User authorization
 
-  Background: There is set of generated user credentials
-    Given Set of valid user credentials equals 3
-
   Scenario Outline: Registered user is authorized when he/she has valid token
-    Given Registered users that have active valid token
-    When User try to authorize
+    When 3 new user(s) are registered
+    And Token is generated for user(s)
+    And User(s) try to authorize
     Then Authorization response is '<response>'
 
     Examples:
@@ -13,8 +11,8 @@ Feature: User authorization
       | true     |
 
   Scenario Outline: Registered user is not authorized when he/she has no token
-    Given Registered users that have no active valid token
-    When User try to authorize
+    When 3 new user(s) are registered
+    And User(s) try to authorize
     Then Authorization response is '<response>'
 
     Examples:
@@ -22,7 +20,8 @@ Feature: User authorization
       | false    |
 
   Scenario Outline: Unregistered user is not able to authorize
-    When User try to authorize
+    When 3 set(s) of valid user credentials are generated
+    And User(s) try to authorize
     Then The error message '<errorMessage>' and error code '<errorCode>' is received
 
     Examples:
