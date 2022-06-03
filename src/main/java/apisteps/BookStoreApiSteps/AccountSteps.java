@@ -3,16 +3,21 @@ package apisteps.BookStoreApiSteps;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import models.BookModel;
 import models.LoginViewModel;
+import models.UserDetailsModel;
 import org.apache.http.HttpStatus;
 import utils.DataGenerator;
+
+import java.util.List;
 
 import static io.restassured.http.ContentType.JSON;
 import static net.serenitybdd.rest.SerenityRest.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class RegistrationSteps extends BaseApiSteps {
+public class AccountSteps extends BaseApiSteps {
 
     private static final String ENDPOINT = "/Account/v1/User";
 
@@ -72,5 +77,23 @@ public class RegistrationSteps extends BaseApiSteps {
     @Then("User is not registered")
     public void registration_with_incorrect_credentials_verification() {
         assertThat(token, equalTo(null));
+    }
+
+    @Then("Book\\(s) is successfully added user's collection")
+    public void correct_book_added_to_collection_verification() {
+        List<Response> userData = AuthorizationSteps.userData;
+
+        for (int i = 0; i < userData.size(); i++) {
+
+            Response userDetails = given()
+                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i))
+                    .contentType(JSON)
+                    .when()
+                    .get(ENDPOINT + "/" + userData.get(i).then().extract().jsonPath().get("userID"));
+
+            UserDetailsModel userDetailsModel = gson.fromJson(userDetails.then().extract().body().asString(), UserDetailsModel.class);
+
+            assertThat(userDetailsModel.getBooks()[0], equalTo(StoreSteps.bookModels.get(i)));
+        }
     }
 }

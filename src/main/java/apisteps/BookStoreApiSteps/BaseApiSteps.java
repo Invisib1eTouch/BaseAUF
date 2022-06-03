@@ -42,8 +42,8 @@ public abstract class BaseApiSteps {
                 .extract().jsonPath().get("token");
     }
 
-    protected void createNewUser(LoginViewModel loginModel) {
-        given()
+    protected Response createNewUser(LoginViewModel loginModel) {
+        return given()
                 .contentType(JSON)
                 .body(gson.toJson(loginModel))
                 .when()

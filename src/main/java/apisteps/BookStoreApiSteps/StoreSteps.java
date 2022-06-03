@@ -2,22 +2,30 @@ package apisteps.BookStoreApiSteps;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.restassured.http.ContentType;
 import models.BookModel;
 import models.BooksModel;
+import models.addListOfBooks.AddListOfBooks;
+import models.addListOfBooks.CollectionOfIsbns;
 import org.apache.http.HttpStatus;
+import utils.DataGenerator;
 import utils.FileService;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class StoreApiSteps extends BaseApiSteps {
+public class StoreSteps extends BaseApiSteps {
     private static final String BOOK_ENDPOINT = "/BookStore/v1/Book";
 
     private static final String BOOKS_ENDPOINT = "/BookStore/v1/Books";
+
+    public static List<BookModel> bookModels = new ArrayList<>();
 
     @When("User request for book with {string}")
     public void get_book_by_isbn(String isbn) {
@@ -32,6 +40,31 @@ public class StoreApiSteps extends BaseApiSteps {
         response = given()
                 .when()
                 .get(BOOKS_ENDPOINT);
+    }
+
+    @When("Any book\\(s) is added to user's collection")
+    public void add_book_to_user_collection() {
+        BooksModel booksInStore = gson.fromJson(response.then().extract().body().asString(), BooksModel.class);
+
+        for (int i = 0; i < AuthorizationSteps.userCredentialsModels.size(); i++) {
+            bookModels.add(booksInStore.getBooks()[DataGenerator.getRandomNumber(0, booksInStore.getBooks().length - 1)]);
+
+            CollectionOfIsbns[] collectionOfIsbns = {new CollectionOfIsbns.Builder()
+                    .addIsbn(bookModels.get(i).getIsbn())
+                    .build()};
+
+            AddListOfBooks addListOfBooks = new AddListOfBooks.Build()
+                    .addUserId(AuthorizationSteps.userData.get(i).then().extract().jsonPath().get("userID"))
+                    .addCollectionOfIsbns(collectionOfIsbns)
+                    .build();
+
+            given()
+                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i))
+                    .contentType(ContentType.JSON)
+                    .body(addListOfBooks)
+                    .when()
+                    .post(BOOKS_ENDPOINT);
+        }
     }
 
     @Then("Correct book details info for book with {string} is received")

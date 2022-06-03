@@ -25,4 +25,12 @@ public class LoginViewModel {
             return newLoginViewModel;
         }
     }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }

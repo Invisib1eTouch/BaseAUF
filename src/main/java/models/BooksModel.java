@@ -1,10 +1,12 @@
 package models;
 
+import java.util.Arrays;
+
 public class BooksModel {
     private BookModel[] books;
 
     public static class Builder {
-        BooksModel booksModel;
+        private BooksModel booksModel;
 
         public Builder() {
             booksModel = new BooksModel();
@@ -13,6 +15,10 @@ public class BooksModel {
         public Builder addBooksModel(BookModel[] bookModels) {
             booksModel.books = bookModels;
             return this;
+        }
+
+        public BooksModel build() {
+            return booksModel;
         }
     }
 

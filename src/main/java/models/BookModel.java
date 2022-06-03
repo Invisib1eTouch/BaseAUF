@@ -63,6 +63,10 @@ public class BookModel {
             bookModel.website = website;
             return this;
         }
+
+        public BookModel build() {
+            return bookModel;
+        }
     }
 
     public String getIsbn() {

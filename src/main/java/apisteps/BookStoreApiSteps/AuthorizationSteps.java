@@ -1,6 +1,5 @@
 package apisteps.BookStoreApiSteps;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.path.json.JsonPath;
@@ -22,21 +21,25 @@ public class AuthorizationSteps extends BaseApiSteps {
 
     private static final String ENDPOINT = "/Account/v1/Authorized";
 
-    private List<LoginViewModel> userCredentialsModels;
+    public static List<LoginViewModel> userCredentialsModels = new ArrayList<>();
     private final List<Response> responseBodiesToVerify = new ArrayList<>();
+
+    public static final List<String> tokens = new ArrayList<>();
+
+    public static final List<Response> userData = new ArrayList<>();
 
     @When("{int} new user\\(s) are registered")
     public void registered_new_unauthorized_users(int numberOfUserCredentialsToGenerate) {
         userCredentialsModels = DataGenerator.generateUserCredentials(numberOfUserCredentialsToGenerate);
         for (LoginViewModel model : userCredentialsModels) {
-            createNewUser(model);
+            userData.add(createNewUser(model));
         }
     }
 
     @When("Token is generated for user\\(s)")
     public void generate_valid_user_credentials() {
         for (LoginViewModel model : userCredentialsModels) {
-            generateToken(model);
+            tokens.add(generateToken(model));
         }
     }
 
@@ -72,6 +75,5 @@ public class AuthorizationSteps extends BaseApiSteps {
             assertThat(resultJsonPath.get("code"), equalTo(errorCode));
             assertThat(resultJsonPath.get("message"), equalTo(errorMessage));
         }
-
     }
 }
