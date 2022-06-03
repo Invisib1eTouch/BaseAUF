@@ -3,11 +3,16 @@ package apisteps.BookStoreApiSteps;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import models.BookModel;
 import models.BooksModel;
+import models.DeleteBookModel;
+import models.UserDetailsModel;
 import models.addListOfBooks.AddListOfBooks;
 import models.addListOfBooks.CollectionOfIsbns;
+import net.serenitybdd.rest.SerenityRest;
 import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
 import utils.DataGenerator;
 import utils.FileService;
 
@@ -16,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,6 +70,25 @@ public class StoreSteps extends BaseApiSteps {
                     .body(addListOfBooks)
                     .when()
                     .post(BOOKS_ENDPOINT);
+        }
+    }
+
+    @When("Book is removed from user collection")
+    public void remove_book_from_collection() {
+        List<Response> userData = AuthorizationSteps.userData;
+
+        for (int i = 0; i < userData.size(); i++) {
+            DeleteBookModel deleteBookModel = new DeleteBookModel.Builder()
+                    .addUserId(userData.get(i).then().extract().jsonPath().get("userID"))
+                    .addIsbn(bookModels.get(i).getIsbn())
+                    .build();
+
+            response = given()
+                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i))
+                    .contentType(JSON)
+                    .body(gson.toJson(deleteBookModel))
+                    .when()
+                    .delete(BOOK_ENDPOINT);
         }
     }
 
