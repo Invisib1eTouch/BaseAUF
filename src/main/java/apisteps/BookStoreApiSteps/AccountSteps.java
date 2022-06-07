@@ -4,12 +4,9 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import models.BookModel;
 import models.LoginViewModel;
 import models.UserDetailsModel;
-import net.serenitybdd.rest.SerenityRest;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
 import utils.DataGenerator;
 
 import java.util.List;
@@ -17,7 +14,6 @@ import java.util.List;
 import static io.restassured.http.ContentType.JSON;
 import static net.serenitybdd.rest.SerenityRest.given;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.equalTo;
 
 public class AccountSteps extends BaseApiSteps {
@@ -104,16 +100,18 @@ public class AccountSteps extends BaseApiSteps {
         List<Response> userData = AuthorizationSteps.userData;
 
         for (int i = 0; i < userData.size(); i++) {
-            Response userDetails = SerenityRest.given()
+            Response userDetails = given()
                     .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i))
                     .contentType(JSON)
                     .when()
                     .get(ENDPOINT + "/" + userData.get(i).then().extract().jsonPath().get("userID"));
 
-            UserDetailsModel userDetailsModel = gson.fromJson(userDetails.then().extract().body().asString(), UserDetailsModel.class);
+            UserDetailsModel userDetailsBeforeBookRemove = gson.fromJson(userData.get(i).then().extract().body().asString(), UserDetailsModel.class);
+
+            UserDetailsModel userDetailsAfterBookRemove = gson.fromJson(userDetails.then().extract().body().asString(), UserDetailsModel.class);
 
             assertThat(response.getStatusCode(), equalTo(HttpStatus.SC_NO_CONTENT));
-            assertThat(userDetailsModel.getBooks(), emptyArray());
+            assertThat(userDetailsAfterBookRemove.getBooks(), equalTo(userDetailsBeforeBookRemove.getBooks()));
         }
     }
 }

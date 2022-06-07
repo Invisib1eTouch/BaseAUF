@@ -1,6 +1,8 @@
 package apisteps.BookStoreApiSteps;
 
 import com.google.gson.Gson;
+import io.cucumber.java.Before;
+import io.cucumber.java.BeforeAll;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import models.LoginViewModel;
@@ -40,6 +42,7 @@ public abstract class BaseApiSteps {
                 .post("/Account/v1/GenerateToken")
                 .then()
                 .extract().jsonPath().get("token");
+
     }
 
     protected Response createNewUser(LoginViewModel loginModel) {

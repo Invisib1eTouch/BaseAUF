@@ -1,5 +1,6 @@
 package apisteps.BookStoreApiSteps;
 
+import io.cucumber.java.After;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.path.json.JsonPath;
@@ -28,16 +29,24 @@ public class AuthorizationSteps extends BaseApiSteps {
 
     public static final List<Response> userData = new ArrayList<>();
 
+    @After
+    public void cleanup() {
+        tokens.clear();
+        userData.clear();
+        userCredentialsModels.clear();
+    }
+
     @When("{int} new user\\(s) are registered")
     public void registered_new_unauthorized_users(int numberOfUserCredentialsToGenerate) {
         userCredentialsModels = DataGenerator.generateUserCredentials(numberOfUserCredentialsToGenerate);
+
         for (LoginViewModel model : userCredentialsModels) {
             userData.add(createNewUser(model));
         }
     }
 
     @When("Token is generated for user\\(s)")
-    public void generate_valid_user_credentials() {
+    public void generate_token() {
         for (LoginViewModel model : userCredentialsModels) {
             tokens.add(generateToken(model));
         }

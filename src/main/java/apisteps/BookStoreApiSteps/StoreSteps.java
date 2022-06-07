@@ -1,5 +1,6 @@
 package apisteps.BookStoreApiSteps;
 
+import io.cucumber.java.After;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.http.ContentType;
@@ -7,12 +8,9 @@ import io.restassured.response.Response;
 import models.BookModel;
 import models.BooksModel;
 import models.DeleteBookModel;
-import models.UserDetailsModel;
 import models.addListOfBooks.AddListOfBooks;
 import models.addListOfBooks.CollectionOfIsbns;
-import net.serenitybdd.rest.SerenityRest;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
 import utils.DataGenerator;
 import utils.FileService;
 
@@ -32,6 +30,11 @@ public class StoreSteps extends BaseApiSteps {
     private static final String BOOKS_ENDPOINT = "/BookStore/v1/Books";
 
     public static List<BookModel> bookModels = new ArrayList<>();
+
+    @After
+    public void cleanup() {
+        bookModels.clear();
+    }
 
     @When("User request for book with {string}")
     public void get_book_by_isbn(String isbn) {
@@ -89,6 +92,46 @@ public class StoreSteps extends BaseApiSteps {
                     .body(gson.toJson(deleteBookModel))
                     .when()
                     .delete(BOOK_ENDPOINT);
+        }
+    }
+
+    @When("Add all books from store to collection")
+    public void add_all_books_from_store_to_collection() {
+        BooksModel booksInStore = gson.fromJson(response.then().extract().body().asString(), BooksModel.class);
+        CollectionOfIsbns[] collectionOfIsbns = new CollectionOfIsbns[booksInStore.getBooks().length];
+
+        for (int i = 0; i < booksInStore.getBooks().length; i++) {
+            collectionOfIsbns[i] = new CollectionOfIsbns.Builder()
+                    .addIsbn(booksInStore.getBooks()[i].getIsbn())
+                    .build();
+        }
+
+        for (int i = 0; i < AuthorizationSteps.userCredentialsModels.size(); i++) {
+            AddListOfBooks addListOfBooks = new AddListOfBooks.Build()
+                    .addUserId(AuthorizationSteps.userData.get(i).then().extract().jsonPath().get("userID"))
+                    .addCollectionOfIsbns(collectionOfIsbns)
+                    .build();
+
+            given()
+                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i))
+                    .contentType(ContentType.JSON)
+                    .body(addListOfBooks)
+                    .when()
+                    .post(BOOKS_ENDPOINT);
+        }
+    }
+
+    @When("All books are removed from collection")
+    public void remove_all_books_from_collection() {
+        List<Response> userData = AuthorizationSteps.userData;
+
+        for (int i = 0; i < userData.size(); i++) {
+            response = given()
+                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i))
+                    .contentType(JSON)
+                    .params("UserId", userData.get(i).then().extract().jsonPath().get("userID"))
+                    .when()
+                    .delete(BOOKS_ENDPOINT);
         }
     }
 
