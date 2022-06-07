@@ -62,13 +62,13 @@ public class StoreSteps extends BaseApiSteps {
                     .addIsbn(bookModels.get(i).getIsbn())
                     .build()};
 
-            AddListOfBooks addListOfBooks = new AddListOfBooks.Build()
+            AddListOfBooks addListOfBooks = new AddListOfBooks.Builder()
                     .addUserId(AuthorizationSteps.userData.get(i).then().extract().jsonPath().get("userID"))
                     .addCollectionOfIsbns(collectionOfIsbns)
                     .build();
 
             given()
-                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i))
+                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
                     .contentType(ContentType.JSON)
                     .body(addListOfBooks)
                     .when()
@@ -87,7 +87,7 @@ public class StoreSteps extends BaseApiSteps {
                     .build();
 
             response = given()
-                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i))
+                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
                     .contentType(JSON)
                     .body(gson.toJson(deleteBookModel))
                     .when()
@@ -107,13 +107,13 @@ public class StoreSteps extends BaseApiSteps {
         }
 
         for (int i = 0; i < AuthorizationSteps.userCredentialsModels.size(); i++) {
-            AddListOfBooks addListOfBooks = new AddListOfBooks.Build()
+            AddListOfBooks addListOfBooks = new AddListOfBooks.Builder()
                     .addUserId(AuthorizationSteps.userData.get(i).then().extract().jsonPath().get("userID"))
                     .addCollectionOfIsbns(collectionOfIsbns)
                     .build();
 
             given()
-                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i))
+                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
                     .contentType(ContentType.JSON)
                     .body(addListOfBooks)
                     .when()
@@ -127,7 +127,7 @@ public class StoreSteps extends BaseApiSteps {
 
         for (int i = 0; i < userData.size(); i++) {
             response = given()
-                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i))
+                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
                     .contentType(JSON)
                     .params("UserId", userData.get(i).then().extract().jsonPath().get("userID"))
                     .when()

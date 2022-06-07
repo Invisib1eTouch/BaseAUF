@@ -1,11 +1,10 @@
 package apisteps.BookStoreApiSteps;
 
 import com.google.gson.Gson;
-import io.cucumber.java.Before;
-import io.cucumber.java.BeforeAll;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import models.LoginViewModel;
+import models.jwtToken.TokenViewModel;
 
 import static io.restassured.http.ContentType.JSON;
 import static net.serenitybdd.rest.SerenityRest.given;
@@ -34,15 +33,14 @@ public abstract class BaseApiSteps {
                 .extract().jsonPath().get("token");
     }
 
-    protected String generateToken(LoginViewModel loginViewModel) {
-        return given()
+    protected TokenViewModel generateToken(LoginViewModel loginViewModel) {
+        response = given()
                 .contentType(JSON)
                 .body(gson.toJson(loginViewModel))
                 .when()
-                .post("/Account/v1/GenerateToken")
-                .then()
-                .extract().jsonPath().get("token");
+                .post("/Account/v1/GenerateToken");
 
+        return gson.fromJson(response.then().extract().body().asString(), TokenViewModel.class);
     }
 
     protected Response createNewUser(LoginViewModel loginModel) {

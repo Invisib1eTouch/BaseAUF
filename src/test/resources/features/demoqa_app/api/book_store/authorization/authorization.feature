@@ -1,5 +1,10 @@
 Feature: User authorization
 
+  Scenario: JWT token validation
+    Given 1 new user(s) are registered
+    When Token is generated for user(s)
+    Then Token is valid
+
   Scenario Outline: Registered user is authorized when he/she has valid token
     When 3 new user(s) are registered
     And Token is generated for user(s)

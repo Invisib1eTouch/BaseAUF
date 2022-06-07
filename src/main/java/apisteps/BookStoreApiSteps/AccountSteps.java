@@ -84,7 +84,7 @@ public class AccountSteps extends BaseApiSteps {
 
         for (int i = 0; i < userData.size(); i++) {
             Response userDetails = given()
-                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i))
+                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
                     .contentType(JSON)
                     .when()
                     .get(ENDPOINT + "/" + userData.get(i).then().extract().jsonPath().get("userID"));
@@ -101,7 +101,7 @@ public class AccountSteps extends BaseApiSteps {
 
         for (int i = 0; i < userData.size(); i++) {
             Response userDetails = given()
-                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i))
+                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
                     .contentType(JSON)
                     .when()
                     .get(ENDPOINT + "/" + userData.get(i).then().extract().jsonPath().get("userID"));

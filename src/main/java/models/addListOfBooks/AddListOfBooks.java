@@ -4,19 +4,19 @@ public class AddListOfBooks {
     private String userId;
     private CollectionOfIsbns[] collectionOfIsbns;
 
-    public static class Build {
+    public static class Builder {
         private AddListOfBooks addListOfBooks;
 
-        public Build() {
+        public Builder() {
             addListOfBooks = new AddListOfBooks();
         }
 
-        public Build addUserId(String userId) {
+        public Builder addUserId(String userId) {
             addListOfBooks.userId = userId;
             return this;
         }
 
-        public Build addCollectionOfIsbns(CollectionOfIsbns[] collectionOfIsbns) {
+        public Builder addCollectionOfIsbns(CollectionOfIsbns[] collectionOfIsbns) {
             addListOfBooks.collectionOfIsbns = collectionOfIsbns;
             return this;
         }
