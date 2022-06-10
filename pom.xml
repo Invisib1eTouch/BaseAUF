@@ -13,9 +13,34 @@
         <serenity.version>3.2.5</serenity.version>
         <cucumber.version>7.3.4</cucumber.version>
         <encoding>UTF-8</encoding>
+        <parallel.tests>4</parallel.tests>
+        <surefire.forkNumber>2</surefire.forkNumber>
         <tags></tags>
         <webdriver.base.url></webdriver.base.url>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>useTheForks</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>3.0.0-M6</version>
+                        <configuration>
+                            <includes>
+                                <include>**/ApiTestRunner.java</include>
+                            </includes>
+                            <systemPropertyVariables>
+                                <serenity.fork.count>0${parallel.tests}</serenity.fork.count>
+                                <serenity.fork.number>0${surefire.forkNumber}</serenity.fork.number>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
@@ -105,16 +130,18 @@
                 <version>3.0.0-M6</version>
                 <configuration>
                     <includes>
-                        <include>**/*Test.java</include>
-                        <include>**/Test*.java</include>
-                        <include>**/*TestSuite.java</include>
-                        <include>**/When*.java</include>
+                        <include>**/ApiTestRunner.java</include>
+<!--                        <include>**/*Test.java</include>-->
+<!--                        <include>**/Test*.java</include>-->
+<!--                        <include>**/*TestSuite.java</include>-->
+<!--                        <include>**/When*.java</include>-->
                     </includes>
                     <systemPropertyVariables>
                         <webdriver.base.url>${webdriver.base.url}</webdriver.base.url>
                     </systemPropertyVariables>
                     <parallel>classes</parallel>
-                    <parallel>methods</parallel>
+                    <threadCount>${parallel.tests}</threadCount>
+                    <forkCount>${parallel.tests}</forkCount>
                     <useUnlimitedThreads>true</useUnlimitedThreads>
                 </configuration>
                 <executions>
