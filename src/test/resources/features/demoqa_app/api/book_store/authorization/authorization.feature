@@ -1,23 +1,23 @@
 Feature: User authorization
 
   Scenario: JWT token validation
-    Given 1 new user(s) are registered
-    When Token is generated for user(s)
+    Given 1 new users are registered
+    When Token is generated for users
     Then Token is valid
 
-  Scenario Outline: Registered user is authorized when he/she has valid token
-    When 3 new user(s) are registered
-    And Token is generated for user(s)
-    And User(s) try to authorize
+  Scenario Outline: Registered user authorizes when he/she has valid token
+    When 3 new users are registered
+    And Token is generated for users
+    And Users try to authorize
     Then Authorization response is '<response>'
 
     Examples:
       | response |
       | true     |
 
-  Scenario Outline: Registered user is not authorized when he/she has no token
-    When 3 new user(s) are registered
-    And User(s) try to authorize
+  Scenario Outline: Registered user is not authorized when he/she doesn't have token
+    When 3 new users are registered
+    And Users try to authorize
     Then Authorization response is '<response>'
 
     Examples:
@@ -26,7 +26,7 @@ Feature: User authorization
 
   Scenario Outline: Unregistered user is not able to authorize
     When 3 set(s) of valid user credentials are generated
-    And User(s) try to authorize
+    And Users try to authorize
     Then The error message '<errorMessage>' and error code '<errorCode>' is received
 
     Examples:

@@ -1,7 +1,7 @@
 Feature: Displaying books in store
 
   Scenario Outline: Get book details info by ISBN value
-    When User request for book with '<ISBN>'
+    When User requests for book with '<ISBN>'
     Then Correct book details info for book with '<ISBN>' is received
 
     Examples:

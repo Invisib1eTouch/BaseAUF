@@ -41,7 +41,7 @@ public class AuthorizationSteps extends BaseApiSteps {
         userCredentialsModels.clear();
     }
 
-    @When("{int} new user\\(s) are registered")
+    @When("{int} new users are registered")
     public void registered_new_unauthorized_users(int numberOfUserCredentialsToGenerate) {
         userCredentialsModels = DataGenerator.generateUserCredentials(numberOfUserCredentialsToGenerate);
 
@@ -50,14 +50,14 @@ public class AuthorizationSteps extends BaseApiSteps {
         }
     }
 
-    @When("Token is generated for user\\(s)")
+    @When("Token is generated for users")
     public void generate_token() {
         for (LoginViewModel model : userCredentialsModels) {
             tokens.add(generateToken(model));
         }
     }
 
-    @When("User\\(s) try to authorize")
+    @When("Users try to authorize")
     public void user_authorization() {
         for (LoginViewModel model : userCredentialsModels) {
             responseBodiesToVerify.add(given()

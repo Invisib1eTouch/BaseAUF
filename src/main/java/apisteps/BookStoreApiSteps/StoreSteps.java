@@ -36,7 +36,7 @@ public class StoreSteps extends BaseApiSteps {
         bookModels.clear();
     }
 
-    @When("User request for book with {string}")
+    @When("User requests for book with {string}")
     public void get_book_by_isbn(String isbn) {
         response = given()
                 .param("ISBN", isbn)
@@ -51,7 +51,7 @@ public class StoreSteps extends BaseApiSteps {
                 .get(BOOKS_ENDPOINT);
     }
 
-    @When("Any book\\(s) is added to user's collection")
+    @When("Any book is added to user's collection")
     public void add_book_to_user_collection() {
         BooksModel booksInStore = gson.fromJson(response.then().extract().body().asString(), BooksModel.class);
 

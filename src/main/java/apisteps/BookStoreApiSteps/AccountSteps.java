@@ -95,7 +95,7 @@ public class AccountSteps extends BaseApiSteps {
         }
     }
 
-    @Then("Book is successfully removed from collection")
+    @Then("User has the same books in collection as before")
     public void book_is_removed_from_collection() {
         List<Response> userData = AuthorizationSteps.userData;
 
