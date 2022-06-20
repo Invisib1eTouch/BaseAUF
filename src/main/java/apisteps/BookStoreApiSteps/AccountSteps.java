@@ -48,9 +48,7 @@ public class AccountSteps extends BaseApiSteps {
 
     @Then("User successfully registered")
     public void successful_registration_verification() {
-        String userID = accountStepsResponse
-                .then()
-                .extract().jsonPath().get("userID");
+        String userID = accountStepsResponse.then().extract().jsonPath().get("userID");
 
         String givenUserID = given()
                 .header("Authorization", "Bearer " + token)
@@ -80,16 +78,20 @@ public class AccountSteps extends BaseApiSteps {
 
     @Then("Book\\(s) is successfully added user's collection")
     public void correct_book_added_to_collection_verification() {
-        List<Response> userData = AuthorizationSteps.userData;
+        List<Response> userDetailsResponses = AuthorizationSteps.userData;
 
-        for (int i = 0; i < userData.size(); i++) {
-            Response userDetails = given()
+        for (int i = 0; i < userDetailsResponses.size(); i++) {
+            String userID = userDetailsResponses.get(i).then().extract().jsonPath().get("userID");
+
+            Response userDetailsResponse = given()
                     .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
                     .contentType(JSON)
                     .when()
-                    .get(ENDPOINT + "/" + userData.get(i).then().extract().jsonPath().get("userID"));
+                    .get(ENDPOINT + "/" + userID);
 
-            UserDetailsModel userDetailsModel = gson.fromJson(userDetails.then().extract().body().asString(), UserDetailsModel.class);
+            String userDetailsResponseBody = userDetailsResponse.then().extract().body().asString();
+
+            UserDetailsModel userDetailsModel = gson.fromJson(userDetailsResponseBody, UserDetailsModel.class);
 
             assertThat(userDetailsModel.getBooks()[0], equalTo(StoreSteps.bookModels.get(i)));
         }
@@ -97,18 +99,24 @@ public class AccountSteps extends BaseApiSteps {
 
     @Then("User has the same books in collection as before")
     public void book_is_removed_from_collection() {
-        List<Response> userData = AuthorizationSteps.userData;
+        List<Response> userDetailsResponses = AuthorizationSteps.userData;
 
-        for (int i = 0; i < userData.size(); i++) {
-            accountStepsResponse = given()
+        for (int i = 0; i < userDetailsResponses.size(); i++) {
+            String userID = userDetailsResponses.get(i).then().extract().jsonPath().get("userID");
+
+            Response userDetailsResponse = given()
                     .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
                     .contentType(JSON)
                     .when()
-                    .get(ENDPOINT + "/" + userData.get(i).then().extract().jsonPath().get("userID"));
+                    .get(ENDPOINT + "/" + userID);
 
-            UserDetailsModel userDetailsBeforeBookRemove = gson.fromJson(userData.get(i).then().extract().body().asString(), UserDetailsModel.class);
+            String beforeBookRemoveResponseBody = userDetailsResponses.get(i).then().extract().body().asString();
+            UserDetailsModel userDetailsBeforeBookRemove = gson.fromJson(beforeBookRemoveResponseBody,
+                    UserDetailsModel.class);
 
-            UserDetailsModel userDetailsAfterBookRemove = gson.fromJson(accountStepsResponse.then().extract().body().asString(), UserDetailsModel.class);
+            String afterBookRemoveResponseBody = userDetailsResponse.then().extract().body().asString();
+            UserDetailsModel userDetailsAfterBookRemove = gson.fromJson(afterBookRemoveResponseBody,
+                    UserDetailsModel.class);
 
             assertThat(StoreSteps.storeStepsResponse.getStatusCode(), equalTo(HttpStatus.SC_NO_CONTENT));
             assertThat(userDetailsAfterBookRemove.getBooks(), equalTo(userDetailsBeforeBookRemove.getBooks()));
