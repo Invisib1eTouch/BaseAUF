@@ -7,42 +7,27 @@ public class UserDetailsModel {
     private String username;
     private BookModel[] books;
 
-    public static class Builder {
-        private UserDetailsModel userDetailsModel;
-
-        public Builder() {
-            userDetailsModel = new UserDetailsModel();
-        }
-
-        public Builder addUserId(String userId) {
-            userDetailsModel.userId = userId;
-            return this;
-        }
-
-        public Builder addUsername(String username) {
-            userDetailsModel.username = username;
-            return this;
-        }
-
-        public Builder addBooksModel(BookModel[] books) {
-            userDetailsModel.books = books;
-            return this;
-        }
-
-        public UserDetailsModel build() {
-            return userDetailsModel;
-        }
-    }
-
     public String getUserId() {
         return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
         return username;
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public BookModel[] getBooks() {
         return books;
+    }
+
+    public void setBooks(BookModel[] books) {
+        this.books = books;
     }
 }

@@ -19,10 +19,9 @@ public abstract class BaseApiSteps {
     }
 
     protected String generateToken(String username, String password) {
-        LoginViewModel loginModel = new LoginViewModel.Builder()
-                .addUsername(username)
-                .addPassword(password)
-                .build();
+        LoginViewModel loginModel = new LoginViewModel();
+        loginModel.setUserName(username);
+        loginModel.setPassword(password);
 
         return given()
                 .contentType(JSON)

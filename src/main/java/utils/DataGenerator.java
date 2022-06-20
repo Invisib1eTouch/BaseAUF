@@ -28,10 +28,9 @@ public class DataGenerator {
     public static List<LoginViewModel> generateUserCredentials(int numberOfCredentials) {
         List<LoginViewModel> userCredentials = new ArrayList<>();
         for (int i = 0; i < numberOfCredentials; i++) {
-            LoginViewModel model = new LoginViewModel.Builder()
-                    .addUsername(getRandomAlphabeticValue(10))
-                    .addPassword(getRandomPassword())
-                    .build();
+            LoginViewModel model = new LoginViewModel();
+            model.setUserName(getRandomAlphabeticValue(10));
+            model.setPassword(getRandomPassword());
 
             userCredentials.add(model);
         }

@@ -4,25 +4,19 @@ public class DeleteBookModel {
     private String userId;
     private String isbn;
 
-    public static class Builder {
-        private DeleteBookModel deleteBookModel;
+    public String getUserId() {
+        return userId;
+    }
 
-        public Builder() {
-            deleteBookModel = new DeleteBookModel();
-        }
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
-        public Builder addUserId(String userId) {
-            deleteBookModel.userId = userId;
-            return this;
-        }
+    public String getIsbn() {
+        return isbn;
+    }
 
-        public Builder addIsbn(String isbn) {
-            deleteBookModel.isbn = isbn;
-            return this;
-        }
-
-        public DeleteBookModel build() {
-            return deleteBookModel;
-        }
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 }

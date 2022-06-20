@@ -32,10 +32,9 @@ public class AccountSteps extends BaseApiSteps {
             password = DataGenerator.getRandomPassword();
         }
 
-        LoginViewModel loginModel = new LoginViewModel.Builder()
-                .addUsername(username)
-                .addPassword(password)
-                .build();
+        LoginViewModel loginModel = new LoginViewModel();
+        loginModel.setUserName(username);
+        loginModel.setPassword(password);
 
         response = given()
                 .contentType(JSON)

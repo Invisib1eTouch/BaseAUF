@@ -58,14 +58,15 @@ public class StoreSteps extends BaseApiSteps {
         for (int i = 0; i < AuthorizationSteps.userCredentialsModels.size(); i++) {
             bookModels.add(booksInStore.getBooks()[DataGenerator.getRandomNumber(0, booksInStore.getBooks().length - 1)]);
 
-            CollectionOfIsbns[] collectionOfIsbns = {new CollectionOfIsbns.Builder()
-                    .addIsbn(bookModels.get(i).getIsbn())
-                    .build()};
+            CollectionOfIsbns bookIsbn = new CollectionOfIsbns();
+            bookIsbn.setIsbn(bookModels.get(i).getIsbn());
 
-            AddListOfBooks addListOfBooks = new AddListOfBooks.Builder()
-                    .addUserId(AuthorizationSteps.userData.get(i).then().extract().jsonPath().get("userID"))
-                    .addCollectionOfIsbns(collectionOfIsbns)
-                    .build();
+            CollectionOfIsbns[] collectionOfIsbns = {bookIsbn};
+
+            AddListOfBooks addListOfBooks = new AddListOfBooks();
+            addListOfBooks.setUserId(AuthorizationSteps.userData.get(i).then().extract().jsonPath().get("userID"));
+            addListOfBooks.setCollectionOfIsbns(collectionOfIsbns);
+
 
             given()
                     .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
@@ -81,10 +82,9 @@ public class StoreSteps extends BaseApiSteps {
         List<Response> userData = AuthorizationSteps.userData;
 
         for (int i = 0; i < userData.size(); i++) {
-            DeleteBookModel deleteBookModel = new DeleteBookModel.Builder()
-                    .addUserId(userData.get(i).then().extract().jsonPath().get("userID"))
-                    .addIsbn(bookModels.get(i).getIsbn())
-                    .build();
+            DeleteBookModel deleteBookModel = new DeleteBookModel();
+            deleteBookModel.setUserId(userData.get(i).then().extract().jsonPath().get("userID"));
+            deleteBookModel.setIsbn(bookModels.get(i).getIsbn());
 
             response = given()
                     .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
@@ -101,16 +101,15 @@ public class StoreSteps extends BaseApiSteps {
         CollectionOfIsbns[] collectionOfIsbns = new CollectionOfIsbns[booksInStore.getBooks().length];
 
         for (int i = 0; i < booksInStore.getBooks().length; i++) {
-            collectionOfIsbns[i] = new CollectionOfIsbns.Builder()
-                    .addIsbn(booksInStore.getBooks()[i].getIsbn())
-                    .build();
+            CollectionOfIsbns isbn = new CollectionOfIsbns();
+            isbn.setIsbn(booksInStore.getBooks()[i].getIsbn());
+            collectionOfIsbns[i] = isbn;
         }
 
         for (int i = 0; i < AuthorizationSteps.userCredentialsModels.size(); i++) {
-            AddListOfBooks addListOfBooks = new AddListOfBooks.Builder()
-                    .addUserId(AuthorizationSteps.userData.get(i).then().extract().jsonPath().get("userID"))
-                    .addCollectionOfIsbns(collectionOfIsbns)
-                    .build();
+            AddListOfBooks addListOfBooks = new AddListOfBooks();
+            addListOfBooks.setUserId(AuthorizationSteps.userData.get(i).then().extract().jsonPath().get("userID"));
+            addListOfBooks.setCollectionOfIsbns(collectionOfIsbns);
 
             given()
                     .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
