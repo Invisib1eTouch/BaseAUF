@@ -12,8 +12,6 @@ import static net.serenitybdd.rest.SerenityRest.given;
 public abstract class BaseApiSteps {
     protected static Gson gson = new Gson();
 
-    protected static Response response;
-
     public BaseApiSteps() {
         RestAssured.baseURI = "https://demoqa.com";
     }
@@ -33,7 +31,7 @@ public abstract class BaseApiSteps {
     }
 
     protected TokenViewModel generateToken(LoginViewModel loginViewModel) {
-        response = given()
+        Response response = given()
                 .contentType(JSON)
                 .body(gson.toJson(loginViewModel))
                 .when()

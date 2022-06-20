@@ -31,6 +31,8 @@ public class StoreSteps extends BaseApiSteps {
 
     public static List<BookModel> bookModels = new ArrayList<>();
 
+    public static Response storeStepsResponse;
+
     @After
     public void cleanup() {
         bookModels.clear();
@@ -38,7 +40,7 @@ public class StoreSteps extends BaseApiSteps {
 
     @When("User requests for book with {string}")
     public void get_book_by_isbn(String isbn) {
-        response = given()
+        storeStepsResponse = given()
                 .param("ISBN", isbn)
                 .when()
                 .get(BOOK_ENDPOINT);
@@ -46,14 +48,14 @@ public class StoreSteps extends BaseApiSteps {
 
     @When("User requests all books available in store")
     public void get_all_books() {
-        response = given()
+        storeStepsResponse = given()
                 .when()
                 .get(BOOKS_ENDPOINT);
     }
 
     @When("Any book is added to user's collection")
     public void add_book_to_user_collection() {
-        BooksModel booksInStore = gson.fromJson(response.then().extract().body().asString(), BooksModel.class);
+        BooksModel booksInStore = gson.fromJson(storeStepsResponse.then().extract().body().asString(), BooksModel.class);
 
         for (int i = 0; i < AuthorizationSteps.userCredentialsModels.size(); i++) {
             bookModels.add(booksInStore.getBooks()[DataGenerator.getRandomNumber(0, booksInStore.getBooks().length - 1)]);
@@ -86,7 +88,7 @@ public class StoreSteps extends BaseApiSteps {
             deleteBookModel.setUserId(userData.get(i).then().extract().jsonPath().get("userID"));
             deleteBookModel.setIsbn(bookModels.get(i).getIsbn());
 
-            response = given()
+            storeStepsResponse = given()
                     .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
                     .contentType(JSON)
                     .body(gson.toJson(deleteBookModel))
@@ -97,7 +99,7 @@ public class StoreSteps extends BaseApiSteps {
 
     @When("Add all books from store to collection")
     public void add_all_books_from_store_to_collection() {
-        BooksModel booksInStore = gson.fromJson(response.then().extract().body().asString(), BooksModel.class);
+        BooksModel booksInStore = gson.fromJson(storeStepsResponse.then().extract().body().asString(), BooksModel.class);
         CollectionOfIsbns[] collectionOfIsbns = new CollectionOfIsbns[booksInStore.getBooks().length];
 
         for (int i = 0; i < booksInStore.getBooks().length; i++) {
@@ -125,7 +127,7 @@ public class StoreSteps extends BaseApiSteps {
         List<Response> userData = AuthorizationSteps.userData;
 
         for (int i = 0; i < userData.size(); i++) {
-            response = given()
+            storeStepsResponse = given()
                     .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
                     .contentType(JSON)
                     .params("UserId", userData.get(i).then().extract().jsonPath().get("userID"))
@@ -137,7 +139,7 @@ public class StoreSteps extends BaseApiSteps {
     @Then("Correct book details info for book with {string} is received")
     public void book_details_info_verification(String isbn) throws IOException {
         BookModel expectedBook = null;
-        BookModel actualBook = gson.fromJson(response.then().extract().body().asString(), BookModel.class);
+        BookModel actualBook = gson.fromJson(storeStepsResponse.then().extract().body().asString(), BookModel.class);
 
         BooksModel books = gson.fromJson(FileService.readFile("src/test/resources/testData/books.json"), BooksModel.class);
 
@@ -148,20 +150,20 @@ public class StoreSteps extends BaseApiSteps {
             }
         }
 
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.SC_OK));
+        assertThat(storeStepsResponse.getStatusCode(), equalTo(HttpStatus.SC_OK));
         assertThat(actualBook, is(equalTo(expectedBook)));
     }
 
     @Then("{int} books are received")
     public void number_of_books_verification(int numberOfBooks) {
-        BooksModel books = gson.fromJson(response.then().extract().body().asString(), BooksModel.class);
+        BooksModel books = gson.fromJson(storeStepsResponse.then().extract().body().asString(), BooksModel.class);
 
         assertThat(books.getBooks().length, equalTo(numberOfBooks));
     }
 
     @Then("Correct data for all books are received")
     public void correct_books_data_received_verification() throws IOException {
-        BooksModel responseBooks = gson.fromJson(response.then().extract().body().asString(), BooksModel.class);
+        BooksModel responseBooks = gson.fromJson(storeStepsResponse.then().extract().body().asString(), BooksModel.class);
         BooksModel testDataBooks = gson.fromJson(FileService.readFile("src/test/resources/testData/books.json"), BooksModel.class);
 
         int bookWithIsbnCounter = 0;
