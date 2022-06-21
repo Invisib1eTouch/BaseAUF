@@ -6,15 +6,11 @@ import io.cucumber.java.en.When;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import models.LoginViewModel;
-import models.jwtToken.DecodedTokenHeader;
-import models.jwtToken.DecodedTokenPayload;
-import models.jwtToken.TokenViewModel;
+import models.TokenViewModel;
 import org.apache.http.HttpStatus;
 import utils.DataGenerator;
 
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 import static io.restassured.http.ContentType.JSON;
@@ -90,40 +86,6 @@ public class AuthorizationSteps extends BaseApiSteps {
             assertThat(response.getStatusCode(), equalTo(HttpStatus.SC_NOT_FOUND));
             assertThat(resultJsonPath.get("code"), equalTo(errorCode));
             assertThat(resultJsonPath.get("message"), equalTo(errorMessage));
-        }
-    }
-
-    @Then("Token is valid")
-    public void token_is_valid_verification() {
-        for (int i = 0; i < tokens.size(); i++) {
-            String[] token_parts = tokens.get(i).getToken().split("\\.");
-
-            String header = new String(Base64.getDecoder().decode(token_parts[0]));
-
-            DecodedTokenHeader actualTokenHeader = gson.fromJson(header, DecodedTokenHeader.class);
-
-            DecodedTokenHeader expectedTokedHeader = new DecodedTokenHeader.Builder()
-                    .addAlg("HS256")
-                    .addTyp("JWT")
-                    .build();
-
-            String payload = new String(Base64.getDecoder().decode(token_parts[1]));
-
-            DecodedTokenPayload actualTokenPayload = gson.fromJson(payload, DecodedTokenPayload.class);
-
-            String expirationTokenTimeInMilli = String.valueOf(Instant.parse(tokens.get(i).getExpires()).toEpochMilli());
-            String expirationTokenTimeInSec = expirationTokenTimeInMilli.substring(0, expirationTokenTimeInMilli.length() - 3);
-            Long activationTokenTimeInSec = Long.parseLong(expirationTokenTimeInSec) - 7 * 24 * 60 * 60;
-
-            DecodedTokenPayload expectedTokenPayload = new DecodedTokenPayload.Builder()
-                    .addUserName(userCredentialsModels.get(i).getUserName())
-                    .addPassword(userCredentialsModels.get(i).getPassword())
-                    .addIat(activationTokenTimeInSec)
-                    .build();
-
-            assertThat(token_parts.length, equalTo(3));
-            assertThat(actualTokenHeader, equalTo(expectedTokedHeader));
-            assertThat(actualTokenPayload, equalTo(expectedTokenPayload));
         }
     }
 }

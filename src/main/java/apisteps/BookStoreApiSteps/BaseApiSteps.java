@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import models.LoginViewModel;
-import models.jwtToken.TokenViewModel;
+import models.TokenViewModel;
 
 import static io.restassured.http.ContentType.JSON;
 import static net.serenitybdd.rest.SerenityRest.given;

@@ -1,4 +1,4 @@
-package models.jwtToken;
+package models;
 
 public class TokenViewModel {
     private String token;

@@ -20,7 +20,7 @@ public class AccountSteps extends BaseApiSteps {
 
     private static final String ENDPOINT = "/Account/v1/User";
 
-    private static String token;
+    private String token;
 
     public static Response accountStepsResponse;
 
@@ -43,7 +43,7 @@ public class AccountSteps extends BaseApiSteps {
                 .when()
                 .post(ENDPOINT);
 
-        token = generateToken(username, password);
+        this.token = generateToken(username, password);
     }
 
     @Then("User successfully registered")
@@ -51,7 +51,7 @@ public class AccountSteps extends BaseApiSteps {
         String userID = accountStepsResponse.then().extract().jsonPath().get("userID");
 
         String givenUserID = given()
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", "Bearer " + this.token)
                 .contentType(JSON)
                 .when()
                 .get(ENDPOINT + "/" + userID)
@@ -73,7 +73,7 @@ public class AccountSteps extends BaseApiSteps {
 
     @Then("User is not registered")
     public void registration_with_incorrect_credentials_verification() {
-        assertThat(token, equalTo(null));
+        assertThat(this.token, equalTo(null));
     }
 
     @Then("Book\\(s) is successfully added user's collection")

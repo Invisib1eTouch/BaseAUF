@@ -105,48 +105,6 @@ public class StoreSteps extends BaseApiSteps {
         }
     }
 
-    @When("Add all books from store to collection")
-    public void add_all_books_from_store_to_collection() {
-        String storeStepsResponseBody = storeStepsResponse.then().extract().body().asString();
-        BooksModel booksInStore = gson.fromJson(storeStepsResponseBody, BooksModel.class);
-        CollectionOfIsbns[] collectionOfIsbns = new CollectionOfIsbns[booksInStore.getBooks().length];
-
-        for (int i = 0; i < booksInStore.getBooks().length; i++) {
-            CollectionOfIsbns isbn = new CollectionOfIsbns();
-            isbn.setIsbn(booksInStore.getBooks()[i].getIsbn());
-            collectionOfIsbns[i] = isbn;
-        }
-
-        for (int i = 0; i < AuthorizationSteps.userCredentialsModels.size(); i++) {
-            String userID = AuthorizationSteps.userData.get(i).then().extract().jsonPath().get("userID");
-            AddListOfBooks addListOfBooks = new AddListOfBooks();
-            addListOfBooks.setUserId(userID);
-            addListOfBooks.setCollectionOfIsbns(collectionOfIsbns);
-
-            given()
-                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
-                    .contentType(ContentType.JSON)
-                    .body(addListOfBooks)
-                    .when()
-                    .post(BOOKS_ENDPOINT);
-        }
-    }
-
-    @When("All books are removed from collection")
-    public void remove_all_books_from_collection() {
-        List<Response> userData = AuthorizationSteps.userData;
-
-        for (int i = 0; i < userData.size(); i++) {
-            String userID = userData.get(i).then().extract().jsonPath().get("userID");
-            storeStepsResponse = given()
-                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
-                    .contentType(JSON)
-                    .params("UserId", userID)
-                    .when()
-                    .delete(BOOKS_ENDPOINT);
-        }
-    }
-
     @Then("Correct book details info for book with {string} is received")
     public void book_details_info_verification(String isbn) throws IOException {
         String actualBookResponseBody = storeStepsResponse.then().extract().body().asString();
