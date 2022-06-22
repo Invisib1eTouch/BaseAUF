@@ -109,12 +109,17 @@ public class BookModel {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BookModel bookModel = (BookModel) o;
-        return pages == bookModel.pages && Objects.equals(isbn, bookModel.isbn) && Objects.equals(title, bookModel.title) && Objects.equals(subTitle, bookModel.subTitle) && Objects.equals(author, bookModel.author) && Objects.equals(publishDate, bookModel.publishDate) && Objects.equals(publisher, bookModel.publisher) && Objects.equals(description, bookModel.description) && Objects.equals(website, bookModel.website);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(isbn, title, subTitle, author, publishDate, publisher, pages, description, website);
+        BookModel bookModel = (BookModel) o;
+
+        if (pages != bookModel.pages) return false;
+        if (!Objects.equals(isbn, bookModel.isbn)) return false;
+        if (!Objects.equals(title, bookModel.title)) return false;
+        if (!Objects.equals(subTitle, bookModel.subTitle)) return false;
+        if (!Objects.equals(author, bookModel.author)) return false;
+        if (!Objects.equals(publishDate, bookModel.publishDate)) return false;
+        if (!Objects.equals(publisher, bookModel.publisher)) return false;
+        if (!Objects.equals(description, bookModel.description)) return false;
+        return Objects.equals(website, bookModel.website);
     }
 }
