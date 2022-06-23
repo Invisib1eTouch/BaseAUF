@@ -105,6 +105,38 @@ public class StoreSteps extends BaseApiSteps {
         }
     }
 
+    @When("User tries to add the same book to the user collection twice")
+    public void user_adds_the_same_book_to_collection_two_times() {
+        String storeStepsResponseBody = storeStepsResponse.then().extract().body().asString();
+        BooksModel booksInStore = gson.fromJson(storeStepsResponseBody, BooksModel.class);
+
+        int randomBookIndex = DataGenerator.getRandomNumber(0, booksInStore.getBooks().length - 1);
+        BookModel randomBookFromStore = booksInStore.getBooks()[randomBookIndex];
+        bookModels.add(randomBookFromStore);
+
+        CollectionOfIsbns bookIsbn = new CollectionOfIsbns();
+        bookIsbn.setIsbn(randomBookFromStore.getIsbn());
+
+        CollectionOfIsbns[] collectionOfIsbns = {bookIsbn};
+
+        for (int i = 0; i < AuthorizationSteps.userCredentialsModels.size(); i++) {
+            String userID = AuthorizationSteps.userData.get(i).then().extract().jsonPath().get("userID");
+
+            AddListOfBooks addListOfBooks = new AddListOfBooks();
+            addListOfBooks.setUserId(userID);
+            addListOfBooks.setCollectionOfIsbns(collectionOfIsbns);
+
+            for (int j = 0; j < 2; j++) {
+                given()
+                        .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
+                        .contentType(ContentType.JSON)
+                        .body(addListOfBooks)
+                        .when()
+                        .post(BOOKS_ENDPOINT);
+            }
+        }
+    }
+
     @Then("Correct book details info for book with {string} is received")
     public void book_details_info_verification(String isbn) throws IOException {
         String actualBookResponseBody = storeStepsResponse.then().extract().body().asString();

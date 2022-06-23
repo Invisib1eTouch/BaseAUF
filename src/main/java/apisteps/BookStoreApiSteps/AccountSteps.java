@@ -4,6 +4,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import models.BookModel;
 import models.LoginViewModel;
 import models.UserDetailsModel;
 import org.apache.http.HttpStatus;
@@ -83,13 +84,12 @@ public class AccountSteps extends BaseApiSteps {
         for (int i = 0; i < userDetailsResponses.size(); i++) {
             String userID = userDetailsResponses.get(i).then().extract().jsonPath().get("userID");
 
-            Response userDetailsResponse = given()
+            String userDetailsResponseBody = given()
                     .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
                     .contentType(JSON)
                     .when()
-                    .get(ENDPOINT + "/" + userID);
-
-            String userDetailsResponseBody = userDetailsResponse.then().extract().body().asString();
+                    .get(ENDPOINT + "/" + userID)
+                    .then().extract().body().asString();
 
             UserDetailsModel userDetailsModel = gson.fromJson(userDetailsResponseBody, UserDetailsModel.class);
 
@@ -104,22 +104,50 @@ public class AccountSteps extends BaseApiSteps {
         for (int i = 0; i < userDetailsResponses.size(); i++) {
             String userID = userDetailsResponses.get(i).then().extract().jsonPath().get("userID");
 
-            Response userDetailsResponse = given()
+            String afterBookRemoveResponseBody = given()
                     .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
                     .contentType(JSON)
                     .when()
-                    .get(ENDPOINT + "/" + userID);
+                    .get(ENDPOINT + "/" + userID)
+                    .then().extract().body().asString();
+
+            UserDetailsModel userDetailsAfterBookRemove = gson.fromJson(afterBookRemoveResponseBody,
+                    UserDetailsModel.class);
 
             String beforeBookRemoveResponseBody = userDetailsResponses.get(i).then().extract().body().asString();
             UserDetailsModel userDetailsBeforeBookRemove = gson.fromJson(beforeBookRemoveResponseBody,
                     UserDetailsModel.class);
 
-            String afterBookRemoveResponseBody = userDetailsResponse.then().extract().body().asString();
-            UserDetailsModel userDetailsAfterBookRemove = gson.fromJson(afterBookRemoveResponseBody,
-                    UserDetailsModel.class);
-
             assertThat(StoreSteps.storeStepsResponse.getStatusCode(), equalTo(HttpStatus.SC_NO_CONTENT));
             assertThat(userDetailsAfterBookRemove.getBooks(), equalTo(userDetailsBeforeBookRemove.getBooks()));
+        }
+    }
+
+    @Then("Only one instance of book is added to user's collection")
+    public void only_one_book_instance_in_user_collection_verification() {
+        List<Response> userDetailsResponses = AuthorizationSteps.userData;
+
+        for (int i = 0; i < userDetailsResponses.size(); i++) {
+            int numberOfTheSameBooks = 0;
+            String userID = userDetailsResponses.get(i).then().extract().jsonPath().get("userID");
+
+            String userDetailsResponseBody = given()
+                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
+                    .contentType(JSON)
+                    .when()
+                    .get(ENDPOINT + "/" + userID)
+                    .then().extract().body().asString();
+
+            UserDetailsModel userDetails = gson.fromJson(userDetailsResponseBody,
+                    UserDetailsModel.class);
+            BookModel[] userBooks = userDetails.getBooks();
+
+            for (BookModel book : userBooks) {
+                if (book.equals(StoreSteps.bookModels.get(0))) {
+                    numberOfTheSameBooks++;
+                }
+            }
+            assertThat(numberOfTheSameBooks, equalTo(1));
         }
     }
 }

@@ -31,13 +31,14 @@ public abstract class BaseApiSteps {
     }
 
     protected TokenViewModel generateToken(LoginViewModel loginViewModel) {
-        Response response = given()
+        String responseBody = given()
                 .contentType(JSON)
                 .body(gson.toJson(loginViewModel))
                 .when()
-                .post("/Account/v1/GenerateToken");
+                .post("/Account/v1/GenerateToken")
+                .then().extract().body().asString();
 
-        return gson.fromJson(response.then().extract().body().asString(), TokenViewModel.class);
+        return gson.fromJson(responseBody, TokenViewModel.class);
     }
 
     protected Response createNewUser(LoginViewModel loginModel) {

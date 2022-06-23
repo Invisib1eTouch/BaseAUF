@@ -1,6 +1,6 @@
 Feature: User authorization
 
-  Scenario Outline: Registered user authorizes when he/she has valid token
+  Scenario Outline: Registered user is able to authorize
     When 3 new users are registered
     And Token is generated for users
     And Users try to authorize

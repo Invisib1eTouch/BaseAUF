@@ -30,8 +30,6 @@ public class AuthorizationSteps extends BaseApiSteps {
 
     public static final List<Response> userData = new ArrayList<>();
 
-    public static Response authorizationStepsResponse;
-
     @After
     public void cleanup() {
         tokens.clear();
