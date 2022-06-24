@@ -104,6 +104,10 @@ public class AccountSteps extends BaseApiSteps {
         for (int i = 0; i < userDetailsResponses.size(); i++) {
             String userID = userDetailsResponses.get(i).then().extract().jsonPath().get("userID");
 
+            String beforeBookRemoveResponseBody = userDetailsResponses.get(i).then().extract().body().asString();
+            UserDetailsModel userDetailsBeforeBookRemove = gson.fromJson(beforeBookRemoveResponseBody,
+                    UserDetailsModel.class);
+
             String afterBookRemoveResponseBody = given()
                     .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
                     .contentType(JSON)
@@ -112,10 +116,6 @@ public class AccountSteps extends BaseApiSteps {
                     .then().extract().body().asString();
 
             UserDetailsModel userDetailsAfterBookRemove = gson.fromJson(afterBookRemoveResponseBody,
-                    UserDetailsModel.class);
-
-            String beforeBookRemoveResponseBody = userDetailsResponses.get(i).then().extract().body().asString();
-            UserDetailsModel userDetailsBeforeBookRemove = gson.fromJson(beforeBookRemoveResponseBody,
                     UserDetailsModel.class);
 
             assertThat(StoreSteps.storeStepsResponse.getStatusCode(), equalTo(HttpStatus.SC_NO_CONTENT));
@@ -148,6 +148,30 @@ public class AccountSteps extends BaseApiSteps {
                 }
             }
             assertThat(numberOfTheSameBooks, equalTo(1));
+        }
+    }
+
+    @Then("Book remains for other user collections")
+    public void book_remains_in_user_collection_except_first_user_verification() {
+        List<Response> userDetailsResponses = AuthorizationSteps.userData;
+
+        for (int i = 1; i < userDetailsResponses.size(); i++) {
+            String userID = userDetailsResponses.get(i).then().extract().jsonPath().get("userID");
+
+            String userDetailsResponseBody = given()
+                    .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
+                    .contentType(JSON)
+                    .when()
+                    .get(ENDPOINT + "/" + userID)
+                    .then().extract().body().asString();
+
+            UserDetailsModel userDetails = gson.fromJson(userDetailsResponseBody,
+                    UserDetailsModel.class);
+            BookModel[] userBooks = userDetails.getBooks();
+
+            for (BookModel book : userBooks) {
+                assertThat(book, equalTo(StoreSteps.bookModels.get(i)));
+            }
         }
     }
 }

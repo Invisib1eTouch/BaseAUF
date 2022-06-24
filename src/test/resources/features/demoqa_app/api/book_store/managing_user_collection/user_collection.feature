@@ -21,3 +21,11 @@ Feature: Managing user collection
     When User requests all books available in store
     And User tries to add the same book to the user collection twice
     Then Only one instance of book is added to user's collection
+
+  Scenario: Book remains in user's collection even when the same book was removed from collection of another user
+    Given 2 new users are registered
+    And Token is generated for users
+    When User requests all books available in store
+    And Any book is added to user's collection
+    And Book is removed from one of users
+    Then Book remains for other user collections

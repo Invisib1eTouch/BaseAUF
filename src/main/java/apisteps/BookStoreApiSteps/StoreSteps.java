@@ -38,6 +38,16 @@ public class StoreSteps extends BaseApiSteps {
         bookModels.clear();
     }
 
+    private BooksModel getBooksModelFromStoreStepsResponse() {
+        String storeStepsResponseBody = storeStepsResponse.then().extract().body().asString();
+        return gson.fromJson(storeStepsResponseBody, BooksModel.class);
+    }
+
+    private BookModel getRandomBookFromBooksModel(BooksModel model) {
+        int randomBookIndex = DataGenerator.getRandomNumber(0, model.getBooks().length - 1);
+        return model.getBooks()[randomBookIndex];
+    }
+
     @When("User requests for book with {string}")
     public void get_book_by_isbn(String isbn) {
         storeStepsResponse = given()
@@ -55,12 +65,11 @@ public class StoreSteps extends BaseApiSteps {
 
     @When("Any book is added to user's collection")
     public void add_book_to_user_collection() {
-        String storeStepsResponseBody = storeStepsResponse.then().extract().body().asString();
-        BooksModel booksInStore = gson.fromJson(storeStepsResponseBody, BooksModel.class);
+        BooksModel booksInStore = getBooksModelFromStoreStepsResponse();
+
+        BookModel randomBookFromStore = getRandomBookFromBooksModel(booksInStore);
 
         for (int i = 0; i < AuthorizationSteps.userCredentialsModels.size(); i++) {
-            int randomBookIndex = DataGenerator.getRandomNumber(0, booksInStore.getBooks().length - 1);
-            BookModel randomBookFromStore = booksInStore.getBooks()[randomBookIndex];
             bookModels.add(randomBookFromStore);
 
             CollectionOfIsbns bookIsbn = new CollectionOfIsbns();
@@ -73,7 +82,6 @@ public class StoreSteps extends BaseApiSteps {
             AddListOfBooks addListOfBooks = new AddListOfBooks();
             addListOfBooks.setUserId(userID);
             addListOfBooks.setCollectionOfIsbns(collectionOfIsbns);
-
 
             given()
                     .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(i).getToken())
@@ -107,11 +115,9 @@ public class StoreSteps extends BaseApiSteps {
 
     @When("User tries to add the same book to the user collection twice")
     public void user_adds_the_same_book_to_collection_two_times() {
-        String storeStepsResponseBody = storeStepsResponse.then().extract().body().asString();
-        BooksModel booksInStore = gson.fromJson(storeStepsResponseBody, BooksModel.class);
+        BooksModel booksInStore = getBooksModelFromStoreStepsResponse();
 
-        int randomBookIndex = DataGenerator.getRandomNumber(0, booksInStore.getBooks().length - 1);
-        BookModel randomBookFromStore = booksInStore.getBooks()[randomBookIndex];
+        BookModel randomBookFromStore = getRandomBookFromBooksModel(booksInStore);
         bookModels.add(randomBookFromStore);
 
         CollectionOfIsbns bookIsbn = new CollectionOfIsbns();
@@ -135,6 +141,25 @@ public class StoreSteps extends BaseApiSteps {
                         .post(BOOKS_ENDPOINT);
             }
         }
+    }
+
+    @When("Book is removed from one of users")
+    public void book_is_removed_from_first_user() {
+        List<Response> userData = AuthorizationSteps.userData;
+
+        String userID = userData.get(0).then().extract().jsonPath().get("userID");
+        String isbn = bookModels.get(0).getIsbn();
+
+        DeleteBookModel deleteBookModel = new DeleteBookModel();
+        deleteBookModel.setUserId(userID);
+        deleteBookModel.setIsbn(isbn);
+
+        given()
+                .header("Authorization", "Bearer " + AuthorizationSteps.tokens.get(0).getToken())
+                .contentType(JSON)
+                .body(gson.toJson(deleteBookModel))
+                .when()
+                .delete(BOOK_ENDPOINT);
     }
 
     @Then("Correct book details info for book with {string} is received")
